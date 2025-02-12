@@ -1,0 +1,135 @@
+{% extends "default.njk" %}
+
+{% block head %}
+<script data-serverside>
+    payload.play = sql.query('select * from play where play_id = :play_id', params, 'get');
+</script>
+{% endblock %}
+
+{% block main %}
+<style>
+    body {
+        background-color: #{{ params.color }};
+    }
+
+    .button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px 20px;
+        width: 100%;
+        background-color: #EEEEEE;
+        color: black;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 50px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: 2px solid black;
+        transition: background-color 0.3s, color 0.3s;
+        margin: 20px 0;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .button:hover {
+        background-color: white;
+    }
+
+    .button:active {
+        border-color: gray;
+        color: gray;
+    }
+
+    .button-text-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .button-text {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .button-subtext {
+        font-size: 12px;
+        color: #222222;
+        opacity: 0.7;
+        margin-top: 4px;
+    }
+
+    .btn-arrow-icon {
+        margin-left: 8px;
+        font-size: 1.5rem;
+        align-self: center;
+    }
+
+    .score {
+        font-weight: bold;
+        font-size: 2rem;
+        background-color: white;
+        color: black;
+        padding: 10px 20px;
+        border-radius: 30px;
+        text-align: center;
+        max-width: 600px;
+        margin: 10px auto;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 3rem;
+    }
+</style>
+
+<div class="container"></div>
+
+<div class="header-row">
+    {{ play.topic_name }}
+</div>
+
+<div class="score">
+    Your Score: {{ play.score }}
+</div>
+
+<div class="button-container">
+    <a href="https://test.playverifyit.org/" class="button">
+        <div class="button-text-container">
+            <span class="button-text">Play Again</span>
+        </div>
+        <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+    </a>
+
+    <a href="https://vote.gov/" class="button">
+        <div class="button-text-container">
+            <span class="button-text">Register to vote</span>
+            <span class="button-subtext">Only takes around two minutes</span>
+        </div>
+        <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+    </a>
+
+    <a href="https://example.com/" class="button">
+        <div class="button-text-container">
+            <span class="button-text">Join the LWV</span>
+            <span class="button-subtext">Help Empower Other Voters</span>
+        </div>
+        <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+    </a>
+
+    <a href="https://anotherlink.com/" class="button">
+        <div class="button-text-container">
+            <span class="button-text">Donate</span>
+            <span class="button-subtext">Help Keep VerifyIt! Ad-Free</span>
+        </div>
+        <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+    </a>
+</div>
+{% endblock %}

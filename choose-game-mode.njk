@@ -1,0 +1,21 @@
+{% extends "default.njk" %}
+
+{% block main %}
+    <div class="position-relative p-5 text-center">
+        <h1 class="inter pb-4 md-align-l">Choose a game mode</h1>
+
+        <div class="d-grid gap-2 col-lg-6 mx-auto">
+            <a href="/choose-game-topic/?mode=single-player"
+                class="btn btn-lg verify-navy mb-3 text-white" type="button">
+                <b class="fs-4">Single Player</b> <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span><br>
+                <p class="pt-2 mb-0">The player answers a series of questions and score as much points.</p>
+            </a>
+
+            <a href="/choose-game-setting/?mode=multi-player"
+                class="btn btn-lg verify-red text-white" type="button">
+                <b class="fs-4">Multiplayer</b> <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span><br>
+                <p class="pt-2 mb-0">Challenge friends or random opponents and climb the leaderboard.</p>
+            </a>
+        </div>
+    </div>
+{% endblock %}

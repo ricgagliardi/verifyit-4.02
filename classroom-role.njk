@@ -1,0 +1,20 @@
+{% extends "default.njk" %}
+
+{% block main %}
+	<div class="position-relative p-5 text-center">
+		<h1 class="inter pb-4 md-align-l">Choose a role</h1>
+
+		<div class="d-grid gap-2 col-lg-6 mx-auto" hx-select="main" hx-target="main" hx-push-url="true">
+			<button hx-get="choose-game-topic" hx-vals='{"mode": "multi-player", "setting": "classroom"}'
+				class="btn btn-lg purple-btn mb-3" type="button">
+				<b class="fs-4">Teacher Host</b> <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span><br>
+				<p class="pt-2 mb-0">If you are the teacher, select here to choose a game topic.</p>
+			</button>
+			<button hx-get="classroom-role" hx-vals='{"mode": "multi-player", "setting": "competitive"}'
+				class="btn btn-lg yellow-btn mb-3" type="button">
+				<b class="fs-4">Player</b> <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span><br>
+				<p class="pt-2 mb-0">Click here to use a join code to join a game.</p>
+			</button>
+		</div>
+	</div>
+{% endblock %}

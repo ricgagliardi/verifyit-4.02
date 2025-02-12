@@ -1,0 +1,326 @@
+<!DOCTYPE svg [<!ENTITY nbsp "&#160;">]><svg width="765pt" height="792pt" viewBox="0.00 0.00 764.60 791.60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 787.6)">
+<title>state transitions</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-787.6 760.6,-787.6 760.6,4 -4,4"></polygon>
+<!-- initial -->
+<g id="node1" class="node state initial">
+<title>initial</title>
+<ellipse fill="black" stroke="black" stroke-width="2" cx="436.82" cy="-778.2" rx="5.4" ry="5.4"></ellipse>
+</g>
+<!-- home screen -->
+<g id="node2" class="node state regular">
+<title>home screen</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="482.51,-744.8 391.14,-744.8 391.14,-708.4 482.51,-708.4 482.51,-744.8"></polygon>
+<text text-anchor="start" x="402.14" y="-723" font-family="Helvetica,sans-Serif" font-size="12.00">home screen</text>
+<path fill="none" stroke="black" stroke-width="2" d="M403.61,-709.4C403.61,-709.4 470.04,-709.4 470.04,-709.4 475.77,-709.4 481.51,-715.13 481.51,-720.87 481.51,-720.87 481.51,-732.33 481.51,-732.33 481.51,-738.07 475.77,-743.8 470.04,-743.8 470.04,-743.8 403.61,-743.8 403.61,-743.8 397.87,-743.8 392.14,-738.07 392.14,-732.33 392.14,-732.33 392.14,-720.87 392.14,-720.87 392.14,-715.13 397.87,-709.4 403.61,-709.4"></path>
+</g>
+<!-- initial&#45;&gt;home screen -->
+<g id="edge1" class="edge transition">
+<title>initial-&gt;home screen</title>
+<path fill="none" stroke="black" d="M436.82,-771.89C436.82,-767.83 436.82,-761.89 436.82,-755.66"></path>
+<polygon fill="black" stroke="black" points="440.32,-756.02 436.82,-746.02 433.32,-756.02 440.32,-756.02"></polygon>
+<text text-anchor="middle" x="438.21" y="-755.8" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+</g>
+<!-- choose game mode -->
+<g id="node3" class="node state regular">
+<title>choose game mode</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="500.52,-680.4 373.12,-680.4 373.12,-644 500.52,-644 500.52,-680.4"></polygon>
+<text text-anchor="start" x="384.12" y="-658.6" font-family="Helvetica,sans-Serif" font-size="12.00">choose game mode</text>
+<path fill="none" stroke="black" stroke-width="2" d="M385.59,-645C385.59,-645 488.06,-645 488.06,-645 493.79,-645 499.52,-650.73 499.52,-656.47 499.52,-656.47 499.52,-667.93 499.52,-667.93 499.52,-673.67 493.79,-679.4 488.06,-679.4 488.06,-679.4 385.59,-679.4 385.59,-679.4 379.86,-679.4 374.12,-673.67 374.12,-667.93 374.12,-667.93 374.12,-656.47 374.12,-656.47 374.12,-650.73 379.86,-645 385.59,-645"></path>
+</g>
+<!-- home screen&#45;&gt;choose game mode -->
+<g id="edge2" class="edge transition">
+<title>home screen-&gt;choose game mode</title>
+<path fill="none" stroke="black" d="M436.82,-708.55C436.82,-703.32 436.82,-697.42 436.82,-691.65"></path>
+<polygon fill="black" stroke="black" points="440.32,-691.74 436.82,-681.74 433.32,-691.74 440.32,-691.74"></polygon>
+<text text-anchor="middle" x="438.21" y="-691.4" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+</g>
+<!-- choose game topic -->
+<g id="node4" class="node state regular">
+<title>choose game topic</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="223.19,-422.8 100.46,-422.8 100.46,-386.4 223.19,-386.4 223.19,-422.8"></polygon>
+<text text-anchor="start" x="111.46" y="-401" font-family="Helvetica,sans-Serif" font-size="12.00">choose game topic</text>
+<path fill="none" stroke="black" stroke-width="2" d="M112.93,-387.4C112.93,-387.4 210.72,-387.4 210.72,-387.4 216.45,-387.4 222.19,-393.13 222.19,-398.87 222.19,-398.87 222.19,-410.33 222.19,-410.33 222.19,-416.07 216.45,-421.8 210.72,-421.8 210.72,-421.8 112.93,-421.8 112.93,-421.8 107.19,-421.8 101.46,-416.07 101.46,-410.33 101.46,-410.33 101.46,-398.87 101.46,-398.87 101.46,-393.13 107.19,-387.4 112.93,-387.4"></path>
+</g>
+<!-- choose game mode&#45;&gt;choose game topic -->
+<g id="edge3" class="edge transition">
+<title>choose game mode-&gt;choose game topic</title>
+<path fill="none" stroke="black" d="M373.28,-661.25C281.53,-659.58 122.82,-649.38 122.82,-598.8 122.82,-598.8 122.82,-598.8 122.82,-468 122.82,-454.8 129.18,-442.08 136.76,-431.61"></path>
+<polygon fill="black" stroke="black" points="139.45,-433.86 142.97,-423.87 133.99,-429.48 139.45,-433.86"></polygon>
+<text text-anchor="start" x="122.82" y="-530.4" font-family="Helvetica,sans-Serif" font-size="10.00">+mode=single-player &nbsp;&nbsp;</text>
+</g>
+<!-- choose game setting -->
+<g id="node5" class="node state regular">
+<title>choose game setting</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="404.19,-616 271.46,-616 271.46,-579.6 404.19,-579.6 404.19,-616"></polygon>
+<text text-anchor="start" x="282.46" y="-594.2" font-family="Helvetica,sans-Serif" font-size="12.00">choose game setting</text>
+<path fill="none" stroke="black" stroke-width="2" d="M283.92,-580.6C283.92,-580.6 391.73,-580.6 391.73,-580.6 397.46,-580.6 403.19,-586.33 403.19,-592.07 403.19,-592.07 403.19,-603.53 403.19,-603.53 403.19,-609.27 397.46,-615 391.73,-615 391.73,-615 283.92,-615 283.92,-615 278.19,-615 272.46,-609.27 272.46,-603.53 272.46,-603.53 272.46,-592.07 272.46,-592.07 272.46,-586.33 278.19,-580.6 283.92,-580.6"></path>
+</g>
+<!-- choose game mode&#45;&gt;choose game setting -->
+<g id="edge4" class="edge transition">
+<title>choose game mode-&gt;choose game setting</title>
+<path fill="none" stroke="black" d="M380.6,-644.09C375.86,-641.7 371.29,-639.01 367.11,-636 362.68,-632.8 358.58,-628.75 354.93,-624.51"></path>
+<polygon fill="black" stroke="black" points="357.95,-622.69 349.04,-616.95 352.42,-626.99 357.95,-622.69"></polygon>
+<text text-anchor="start" x="367.11" y="-627" font-family="Helvetica,sans-Serif" font-size="10.00">+mode=multi-player &nbsp;&nbsp;</text>
+</g>
+<!-- choose game difficulty -->
+<g id="node11" class="node state regular">
+<title>choose game difficulty</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="235.19,-358.4 94.46,-358.4 94.46,-322 235.19,-322 235.19,-358.4"></polygon>
+<text text-anchor="start" x="105.46" y="-336.6" font-family="Helvetica,sans-Serif" font-size="12.00">choose game difficulty</text>
+<path fill="none" stroke="black" stroke-width="2" d="M106.93,-323C106.93,-323 222.72,-323 222.72,-323 228.45,-323 234.19,-328.73 234.19,-334.47 234.19,-334.47 234.19,-345.93 234.19,-345.93 234.19,-351.67 228.45,-357.4 222.72,-357.4 222.72,-357.4 106.93,-357.4 106.93,-357.4 101.19,-357.4 95.46,-351.67 95.46,-345.93 95.46,-345.93 95.46,-334.47 95.46,-334.47 95.46,-328.73 101.19,-323 106.93,-323"></path>
+</g>
+<!-- choose game topic&#45;&gt;choose game difficulty -->
+<g id="edge11" class="edge transition">
+<title>choose game topic-&gt;choose game difficulty</title>
+<path fill="none" stroke="black" d="M162.64,-386.55C162.89,-381.32 163.18,-375.42 163.46,-369.65"></path>
+<polygon fill="black" stroke="black" points="166.95,-369.9 163.93,-359.74 159.96,-369.56 166.95,-369.9"></polygon>
+<text text-anchor="middle" x="164.98" y="-369.4" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+</g>
+<!-- choose a role -->
+<g id="node6" class="node state regular">
+<title>choose a role</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="356.85,-551.6 262.8,-551.6 262.8,-515.2 356.85,-515.2 356.85,-551.6"></polygon>
+<text text-anchor="start" x="273.8" y="-529.8" font-family="Helvetica,sans-Serif" font-size="12.00">choose a role</text>
+<path fill="none" stroke="black" stroke-width="2" d="M275.27,-516.2C275.27,-516.2 344.38,-516.2 344.38,-516.2 350.11,-516.2 355.85,-521.93 355.85,-527.67 355.85,-527.67 355.85,-539.13 355.85,-539.13 355.85,-544.87 350.11,-550.6 344.38,-550.6 344.38,-550.6 275.27,-550.6 275.27,-550.6 269.53,-550.6 263.8,-544.87 263.8,-539.13 263.8,-539.13 263.8,-527.67 263.8,-527.67 263.8,-521.93 269.53,-516.2 275.27,-516.2"></path>
+</g>
+<!-- choose game setting&#45;&gt;choose a role -->
+<g id="edge5" class="edge transition">
+<title>choose game setting-&gt;choose a role</title>
+<path fill="none" stroke="black" d="M315.39,-579.88C313.25,-577.35 311.38,-574.57 310.05,-571.6 308.78,-568.77 307.99,-565.69 307.52,-562.55"></path>
+<polygon fill="black" stroke="black" points="311.03,-562.68 307.15,-552.82 304.04,-562.95 311.03,-562.68"></polygon>
+<text text-anchor="start" x="310.05" y="-562.6" font-family="Helvetica,sans-Serif" font-size="10.00">+setting=classroom | competitive &nbsp;&nbsp;</text>
+</g>
+<!-- enter room name -->
+<g id="node7" class="node state regular">
+<title>enter room name</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="366.51,-487.2 253.14,-487.2 253.14,-450.8 366.51,-450.8 366.51,-487.2"></polygon>
+<text text-anchor="start" x="264.14" y="-465.4" font-family="Helvetica,sans-Serif" font-size="12.00">enter room name</text>
+<path fill="none" stroke="black" stroke-width="2" d="M265.6,-451.8C265.6,-451.8 354.05,-451.8 354.05,-451.8 359.78,-451.8 365.51,-457.53 365.51,-463.27 365.51,-463.27 365.51,-474.73 365.51,-474.73 365.51,-480.47 359.78,-486.2 354.05,-486.2 354.05,-486.2 265.6,-486.2 265.6,-486.2 259.87,-486.2 254.14,-480.47 254.14,-474.73 254.14,-474.73 254.14,-463.27 254.14,-463.27 254.14,-457.53 259.87,-451.8 265.6,-451.8"></path>
+</g>
+<!-- choose a role&#45;&gt;enter room name -->
+<g id="edge6" class="edge transition">
+<title>choose a role-&gt;enter room name</title>
+<path fill="none" stroke="black" d="M309.82,-515.35C309.82,-510.12 309.82,-504.22 309.82,-498.45"></path>
+<polygon fill="black" stroke="black" points="313.32,-498.54 309.82,-488.54 306.32,-498.54 313.32,-498.54"></polygon>
+<text text-anchor="start" x="309.82" y="-498.2" font-family="Helvetica,sans-Serif" font-size="10.00">+role=host | contestant &nbsp;&nbsp;</text>
+</g>
+<!-- enter room name&#45;&gt;choose game topic -->
+<g id="edge7" class="edge transition">
+<title>enter room name-&gt;choose game topic</title>
+<path fill="none" stroke="black" d="M253.36,-461.62C224.73,-457.46 193.61,-451.22 182.14,-442.8 178.44,-440.09 175.34,-436.49 172.76,-432.6"></path>
+<polygon fill="black" stroke="black" points="175.94,-431.13 168.12,-423.99 169.78,-434.45 175.94,-431.13"></polygon>
+<text text-anchor="start" x="182.14" y="-433.8" font-family="Helvetica,sans-Serif" font-size="10.00">+room=&lt;name&gt; role=host &nbsp;&nbsp;</text>
+</g>
+<!-- enter your name -->
+<g id="node8" class="node state regular">
+<title>enter your name</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="366.51,-422.8 257.13,-422.8 257.13,-386.4 366.51,-386.4 366.51,-422.8"></polygon>
+<text text-anchor="start" x="268.13" y="-401" font-family="Helvetica,sans-Serif" font-size="12.00">enter your name</text>
+<path fill="none" stroke="black" stroke-width="2" d="M269.6,-387.4C269.6,-387.4 354.05,-387.4 354.05,-387.4 359.78,-387.4 365.51,-393.13 365.51,-398.87 365.51,-398.87 365.51,-410.33 365.51,-410.33 365.51,-416.07 359.78,-421.8 354.05,-421.8 354.05,-421.8 269.6,-421.8 269.6,-421.8 263.87,-421.8 258.13,-416.07 258.13,-410.33 258.13,-410.33 258.13,-398.87 258.13,-398.87 258.13,-393.13 263.87,-387.4 269.6,-387.4"></path>
+</g>
+<!-- enter room name&#45;&gt;enter your name -->
+<g id="edge8" class="edge transition">
+<title>enter room name-&gt;enter your name</title>
+<path fill="none" stroke="black" d="M310.37,-450.95C310.54,-445.72 310.73,-439.82 310.91,-434.05"></path>
+<polygon fill="black" stroke="black" points="314.41,-434.25 311.23,-424.14 307.41,-434.03 314.41,-434.25"></polygon>
+<text text-anchor="start" x="311" y="-433.8" font-family="Helvetica,sans-Serif" font-size="10.00">+room=&lt;name&gt; role=contestant &nbsp;&nbsp;</text>
+</g>
+<!-- choose avatar -->
+<g id="node9" class="node state regular">
+<title>choose avatar</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="357.51,-358.4 260.13,-358.4 260.13,-322 357.51,-322 357.51,-358.4"></polygon>
+<text text-anchor="start" x="271.13" y="-336.6" font-family="Helvetica,sans-Serif" font-size="12.00">choose avatar</text>
+<path fill="none" stroke="black" stroke-width="2" d="M272.6,-323C272.6,-323 345.05,-323 345.05,-323 350.78,-323 356.51,-328.73 356.51,-334.47 356.51,-334.47 356.51,-345.93 356.51,-345.93 356.51,-351.67 350.78,-357.4 345.05,-357.4 345.05,-357.4 272.6,-357.4 272.6,-357.4 266.87,-357.4 261.13,-351.67 261.13,-345.93 261.13,-345.93 261.13,-334.47 261.13,-334.47 261.13,-328.73 266.87,-323 272.6,-323"></path>
+</g>
+<!-- enter your name&#45;&gt;choose avatar -->
+<g id="edge9" class="edge transition">
+<title>enter your name-&gt;choose avatar</title>
+<path fill="none" stroke="black" d="M311,-386.55C310.75,-381.32 310.47,-375.42 310.19,-369.65"></path>
+<polygon fill="black" stroke="black" points="313.69,-369.56 309.72,-359.74 306.7,-369.9 313.69,-369.56"></polygon>
+<text text-anchor="start" x="310.59" y="-369.4" font-family="Helvetica,sans-Serif" font-size="10.00">+contestant-name=&lt;name&gt; &nbsp;&nbsp;</text>
+</g>
+<!-- game room ready -->
+<g id="node10" class="node state regular">
+<title>game room ready</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="222.85,-294 106.8,-294 106.8,-257.6 222.85,-257.6 222.85,-294"></polygon>
+<text text-anchor="start" x="117.8" y="-272.2" font-family="Helvetica,sans-Serif" font-size="12.00">game room ready</text>
+<path fill="none" stroke="black" stroke-width="2" d="M119.27,-258.6C119.27,-258.6 210.38,-258.6 210.38,-258.6 216.11,-258.6 221.85,-264.33 221.85,-270.07 221.85,-270.07 221.85,-281.53 221.85,-281.53 221.85,-287.27 216.11,-293 210.38,-293 210.38,-293 119.27,-293 119.27,-293 113.54,-293 107.8,-287.27 107.8,-281.53 107.8,-281.53 107.8,-270.07 107.8,-270.07 107.8,-264.33 113.54,-258.6 119.27,-258.6"></path>
+</g>
+<!-- choose avatar&#45;&gt;game room ready -->
+<g id="edge10" class="edge transition">
+<title>choose avatar-&gt;game room ready</title>
+<path fill="none" stroke="black" d="M269.47,-322.15C252.64,-314.85 232.78,-306.25 214.91,-298.5"></path>
+<polygon fill="black" stroke="black" points="216.33,-295.31 205.76,-294.54 213.55,-301.73 216.33,-295.31"></polygon>
+<text text-anchor="start" x="249.72" y="-305" font-family="Helvetica,sans-Serif" font-size="10.00">+avatar=&lt;name&gt; &nbsp;&nbsp;</text>
+</g>
+<!-- display question -->
+<g id="node12" class="node state regular">
+<title>display question</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="453.85,-229.6 345.8,-229.6 345.8,-193.2 453.85,-193.2 453.85,-229.6"></polygon>
+<text text-anchor="start" x="356.8" y="-207.8" font-family="Helvetica,sans-Serif" font-size="12.00">display question</text>
+<path fill="none" stroke="black" stroke-width="2" d="M358.26,-194.2C358.26,-194.2 441.39,-194.2 441.39,-194.2 447.12,-194.2 452.85,-199.93 452.85,-205.67 452.85,-205.67 452.85,-217.13 452.85,-217.13 452.85,-222.87 447.12,-228.6 441.39,-228.6 441.39,-228.6 358.26,-228.6 358.26,-228.6 352.53,-228.6 346.8,-222.87 346.8,-217.13 346.8,-217.13 346.8,-205.67 346.8,-205.67 346.8,-199.93 352.53,-194.2 358.26,-194.2"></path>
+</g>
+<!-- game room ready&#45;&gt;display question -->
+<g id="edge15" class="edge transition">
+<title>game room ready-&gt;display question</title>
+<path fill="none" stroke="black" d="M174.02,-257.79C178.95,-250.36 185.72,-242.28 194.01,-237.6 217.47,-224.36 283.86,-217.99 334.95,-214.98"></path>
+<polygon fill="black" stroke="black" points="334.96,-218.48 344.75,-214.44 334.57,-211.5 334.96,-218.48"></polygon>
+<text text-anchor="start" x="194.01" y="-240.6" font-family="Helvetica,sans-Serif" font-size="10.00">role=contestant +play=in-progress &nbsp;&nbsp;</text>
+</g>
+<!-- game in progress -->
+<g id="node13" class="node state regular">
+<title>game in progress</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="167.18,-229.6 52.47,-229.6 52.47,-193.2 167.18,-193.2 167.18,-229.6"></polygon>
+<text text-anchor="start" x="63.47" y="-207.8" font-family="Helvetica,sans-Serif" font-size="12.00">game in progress</text>
+<path fill="none" stroke="black" stroke-width="2" d="M64.93,-194.2C64.93,-194.2 154.71,-194.2 154.71,-194.2 160.45,-194.2 166.18,-199.93 166.18,-205.67 166.18,-205.67 166.18,-217.13 166.18,-217.13 166.18,-222.87 160.45,-228.6 154.71,-228.6 154.71,-228.6 64.93,-228.6 64.93,-228.6 59.2,-228.6 53.47,-222.87 53.47,-217.13 53.47,-217.13 53.47,-205.67 53.47,-205.67 53.47,-199.93 59.2,-194.2 64.93,-194.2"></path>
+</g>
+<!-- game room ready&#45;&gt;game in progress -->
+<g id="edge14" class="edge transition">
+<title>game room ready-&gt;game in progress</title>
+<path fill="none" stroke="black" d="M107.03,-273.34C66.88,-270.96 18.32,-264.9 5.25,-249.6 -10.07,-231.67 13.15,-222.38 41.57,-217.57"></path>
+<polygon fill="black" stroke="black" points="41.76,-221.08 51.14,-216.16 40.74,-214.16 41.76,-221.08"></polygon>
+<text text-anchor="start" x="5.25" y="-240.6" font-family="Helvetica,sans-Serif" font-size="10.00">role=host +play=in-progress &nbsp;&nbsp;</text>
+</g>
+<!-- choose game difficulty&#45;&gt;game room ready -->
+<g id="edge12" class="edge transition">
+<title>choose game difficulty-&gt;game room ready</title>
+<path fill="none" stroke="black" d="M164.82,-322.15C164.82,-316.92 164.82,-311.02 164.82,-305.25"></path>
+<polygon fill="black" stroke="black" points="168.32,-305.34 164.82,-295.34 161.32,-305.34 168.32,-305.34"></polygon>
+<text text-anchor="start" x="164.82" y="-305" font-family="Helvetica,sans-Serif" font-size="10.00">role=host &nbsp;&nbsp;</text>
+</g>
+<!-- choose game difficulty&#45;&gt;display question -->
+<g id="edge13" class="edge transition">
+<title>choose game difficulty-&gt;display question</title>
+<path fill="none" stroke="black" d="M209.11,-322.09C248.72,-305.93 307.63,-279.71 354.82,-249.6 360.88,-245.74 367.03,-241.16 372.76,-236.56"></path>
+<polygon fill="black" stroke="black" points="374.73,-239.47 380.18,-230.39 370.26,-234.09 374.73,-239.47"></polygon>
+<text text-anchor="start" x="341.43" y="-272.8" font-family="Helvetica,sans-Serif" font-size="10.00">mode=single-player +play=in-progress &nbsp;&nbsp;</text>
+</g>
+<!-- display followup -->
+<g id="node14" class="node state regular">
+<title>display followup</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="646.18,-100.8 539.47,-100.8 539.47,-64.4 646.18,-64.4 646.18,-100.8"></polygon>
+<text text-anchor="start" x="550.47" y="-79" font-family="Helvetica,sans-Serif" font-size="12.00">display followup</text>
+<path fill="none" stroke="black" stroke-width="2" d="M551.93,-65.4C551.93,-65.4 633.71,-65.4 633.71,-65.4 639.45,-65.4 645.18,-71.13 645.18,-76.87 645.18,-76.87 645.18,-88.33 645.18,-88.33 645.18,-94.07 639.45,-99.8 633.71,-99.8 633.71,-99.8 551.93,-99.8 551.93,-99.8 546.2,-99.8 540.47,-94.07 540.47,-88.33 540.47,-88.33 540.47,-76.87 540.47,-76.87 540.47,-71.13 546.2,-65.4 551.93,-65.4"></path>
+</g>
+<!-- display question&#45;&gt;display followup -->
+<g id="edge16" class="edge transition">
+<title>display question-&gt;display followup</title>
+<path fill="none" stroke="black" d="M374.46,-193.28C365.6,-185.81 356.69,-176.22 351.94,-165.2 345.53,-150.34 341.61,-141.25 351.94,-128.8 373.98,-102.23 464.85,-91.19 528.45,-86.66"></path>
+<polygon fill="black" stroke="black" points="528.33,-90.17 538.08,-86.01 527.86,-83.19 528.33,-90.17"></polygon>
+<text text-anchor="start" x="351.94" y="-144" font-family="Helvetica,sans-Serif" font-size="10.00">mode=single-player &nbsp;&nbsp;</text>
+</g>
+<!-- wait for other players -->
+<g id="node15" class="node state regular">
+<title>wait for other players</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="592.51,-165.2 459.13,-165.2 459.13,-128.8 592.51,-128.8 592.51,-165.2"></polygon>
+<text text-anchor="start" x="470.13" y="-143.4" font-family="Helvetica,sans-Serif" font-size="12.00">wait for other players</text>
+<path fill="none" stroke="black" stroke-width="2" d="M471.6,-129.8C471.6,-129.8 580.05,-129.8 580.05,-129.8 585.78,-129.8 591.51,-135.53 591.51,-141.27 591.51,-141.27 591.51,-152.73 591.51,-152.73 591.51,-158.47 585.78,-164.2 580.05,-164.2 580.05,-164.2 471.6,-164.2 471.6,-164.2 465.87,-164.2 460.13,-158.47 460.13,-152.73 460.13,-152.73 460.13,-141.27 460.13,-141.27 460.13,-135.53 465.87,-129.8 471.6,-129.8"></path>
+</g>
+<!-- display question&#45;&gt;wait for other players -->
+<g id="edge17" class="edge transition">
+<title>display question-&gt;wait for other players</title>
+<path fill="none" stroke="black" d="M434.25,-193.35C448.84,-186.13 466.01,-177.62 481.53,-169.94"></path>
+<polygon fill="black" stroke="black" points="482.67,-173.28 490.08,-165.7 479.56,-167 482.67,-173.28"></polygon>
+<text text-anchor="start" x="474.11" y="-176.2" font-family="Helvetica,sans-Serif" font-size="10.00">role=contestant &nbsp;&nbsp;</text>
+</g>
+<!-- game question status -->
+<g id="node17" class="node state regular">
+<title>game question status</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="141.86,-165.2 5.79,-165.2 5.79,-128.8 141.86,-128.8 141.86,-165.2"></polygon>
+<text text-anchor="start" x="16.79" y="-143.4" font-family="Helvetica,sans-Serif" font-size="12.00">game question status</text>
+<path fill="none" stroke="black" stroke-width="2" d="M18.26,-129.8C18.26,-129.8 129.39,-129.8 129.39,-129.8 135.13,-129.8 140.86,-135.53 140.86,-141.27 140.86,-141.27 140.86,-152.73 140.86,-152.73 140.86,-158.47 135.13,-164.2 129.39,-164.2 129.39,-164.2 18.26,-164.2 18.26,-164.2 12.52,-164.2 6.79,-158.47 6.79,-152.73 6.79,-152.73 6.79,-141.27 6.79,-141.27 6.79,-135.53 12.52,-129.8 18.26,-129.8"></path>
+</g>
+<!-- game in progress&#45;&gt;game question status -->
+<g id="edge21" class="edge transition">
+<title>game in progress-&gt;game question status</title>
+<path fill="none" stroke="black" d="M62.7,-193.56C59.84,-191.14 57.31,-188.36 55.28,-185.2 53.33,-182.14 52.86,-178.84 53.37,-175.52"></path>
+<polygon fill="black" stroke="black" points="56.52,-177.06 57.12,-166.48 50.05,-174.37 56.52,-177.06"></polygon>
+<text text-anchor="start" x="55.28" y="-176.2" font-family="Helvetica,sans-Serif" font-size="10.00">play=in-progress &nbsp;&nbsp;</text>
+</g>
+<!-- game over -->
+<g id="node18" class="node state regular">
+<title>game over</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="279.17,-165.2 200.48,-165.2 200.48,-128.8 279.17,-128.8 279.17,-165.2"></polygon>
+<text text-anchor="start" x="211.48" y="-143.4" font-family="Helvetica,sans-Serif" font-size="12.00">game over</text>
+<path fill="none" stroke="black" stroke-width="2" d="M212.94,-129.8C212.94,-129.8 266.7,-129.8 266.7,-129.8 272.44,-129.8 278.17,-135.53 278.17,-141.27 278.17,-141.27 278.17,-152.73 278.17,-152.73 278.17,-158.47 272.44,-164.2 266.7,-164.2 266.7,-164.2 212.94,-164.2 212.94,-164.2 207.21,-164.2 201.48,-158.47 201.48,-152.73 201.48,-152.73 201.48,-141.27 201.48,-141.27 201.48,-135.53 207.21,-129.8 212.94,-129.8"></path>
+</g>
+<!-- game in progress&#45;&gt;game over -->
+<g id="edge22" class="edge transition">
+<title>game in progress-&gt;game over</title>
+<path fill="none" stroke="black" d="M130.03,-193.21C138.94,-186.28 149.8,-178.64 160.51,-173.2 169.68,-168.54 179.89,-164.52 189.85,-161.14"></path>
+<polygon fill="black" stroke="black" points="190.6,-164.58 199.06,-158.2 188.46,-157.91 190.6,-164.58"></polygon>
+<text text-anchor="start" x="160.51" y="-176.2" font-family="Helvetica,sans-Serif" font-size="10.00">play=game-over &nbsp;&nbsp;</text>
+</g>
+<!-- display followup&#45;&gt;display question -->
+<g id="edge19" class="edge transition">
+<title>display followup-&gt;display question</title>
+<path fill="none" stroke="black" d="M601.38,-100.73C608.85,-118.37 616.67,-145.93 603.82,-165.2 588.44,-188.27 518.68,-199.91 464.98,-205.54"></path>
+<polygon fill="black" stroke="black" points="464.9,-202.03 455.29,-206.5 465.59,-208.99 464.9,-202.03"></polygon>
+<text text-anchor="start" x="610.67" y="-144" font-family="Helvetica,sans-Serif" font-size="10.00">play=in-progress &nbsp;&nbsp;</text>
+</g>
+<!-- display score -->
+<g id="node16" class="node state regular">
+<title>display score</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="708.84,-36.4 616.81,-36.4 616.81,0 708.84,0 708.84,-36.4"></polygon>
+<text text-anchor="start" x="627.81" y="-14.6" font-family="Helvetica,sans-Serif" font-size="12.00">display score</text>
+<path fill="none" stroke="black" stroke-width="2" d="M629.27,-1C629.27,-1 696.37,-1 696.37,-1 702.11,-1 707.84,-6.73 707.84,-12.47 707.84,-12.47 707.84,-23.93 707.84,-23.93 707.84,-29.67 702.11,-35.4 696.37,-35.4 696.37,-35.4 629.27,-35.4 629.27,-35.4 623.54,-35.4 617.81,-29.67 617.81,-23.93 617.81,-23.93 617.81,-12.47 617.81,-12.47 617.81,-6.73 623.54,-1 629.27,-1"></path>
+</g>
+<!-- display followup&#45;&gt;display score -->
+<g id="edge20" class="edge transition">
+<title>display followup-&gt;display score</title>
+<path fill="none" stroke="black" d="M611.95,-64.55C619.13,-58.15 627.43,-50.75 635.23,-43.8"></path>
+<polygon fill="black" stroke="black" points="637.45,-46.5 642.59,-37.24 632.8,-41.28 637.45,-46.5"></polygon>
+<text text-anchor="start" x="634.09" y="-47.4" font-family="Helvetica,sans-Serif" font-size="10.00">play=game-over &nbsp;&nbsp;</text>
+</g>
+<!-- wait for other players&#45;&gt;display followup -->
+<g id="edge18" class="edge transition">
+<title>wait for other players-&gt;display followup</title>
+<path fill="none" stroke="black" d="M544.13,-128.95C550.93,-122.62 558.78,-115.31 566.17,-108.43"></path>
+<polygon fill="black" stroke="black" points="568.5,-111.04 573.43,-101.66 563.73,-105.92 568.5,-111.04"></polygon>
+<text text-anchor="middle" x="566.71" y="-111.8" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+</g>
+<!-- display score&#45;&gt;choose game mode -->
+<g id="edge27" class="edge transition">
+<title>display score-&gt;choose game mode</title>
+<path fill="none" stroke="black" d="M708.59,-32.12C731.25,-41.6 753.82,-57.18 753.82,-81.6 753.82,-598.8 753.82,-598.8 753.82,-598.8 753.82,-647.93 605.36,-659.04 511.64,-661.16"></path>
+<polygon fill="black" stroke="black" points="511.66,-657.66 501.72,-661.35 511.79,-664.66 511.66,-657.66"></polygon>
+<text text-anchor="middle" x="755.21" y="-337.2" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+</g>
+<!-- game question status&#45;&gt;game in progress -->
+<g id="edge23" class="edge transition">
+<title>game question status-&gt;game in progress</title>
+<path fill="none" stroke="black" d="M141.59,-158.11C157.42,-160.45 174.21,-162.93 189.82,-165.2 202.26,-167.01 237.59,-163.7 245.82,-173.2 268.96,-199.88 222.83,-208.3 178.15,-210.57"></path>
+<polygon fill="black" stroke="black" points="178.23,-207.07 168.38,-210.96 178.51,-214.06 178.23,-207.07"></polygon>
+<text text-anchor="middle" x="253.08" y="-176.2" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+</g>
+<!-- game over&#45;&gt;choose game mode -->
+<g id="edge25" class="edge transition">
+<title>game over-&gt;choose game mode</title>
+<path fill="none" stroke="black" d="M254.49,-164.87C271.78,-183.65 302.3,-213.45 334.82,-229.6 387.76,-255.89 420.97,-217.97 464.82,-257.6 481.95,-273.07 480.82,-283.92 480.82,-307 480.82,-598.8 480.82,-598.8 480.82,-598.8 480.82,-612.44 473.72,-625.19 465.22,-635.57"></path>
+<polygon fill="black" stroke="black" points="462.68,-633.16 458.55,-642.92 467.86,-637.86 462.68,-633.16"></polygon>
+<text text-anchor="middle" x="482.21" y="-401.6" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+</g>
+<!-- game player detail -->
+<g id="node19" class="node state regular">
+<title>game player detail</title>
+<polygon fill="#ffffff" fill-opacity="0.003922" stroke="none" stroke-width="2" points="299.85,-100.8 179.8,-100.8 179.8,-64.4 299.85,-64.4 299.85,-100.8"></polygon>
+<text text-anchor="start" x="190.8" y="-79" font-family="Helvetica,sans-Serif" font-size="12.00">game player detail</text>
+<path fill="none" stroke="black" stroke-width="2" d="M192.26,-65.4C192.26,-65.4 287.39,-65.4 287.39,-65.4 293.12,-65.4 298.85,-71.13 298.85,-76.87 298.85,-76.87 298.85,-88.33 298.85,-88.33 298.85,-94.07 293.12,-99.8 287.39,-99.8 287.39,-99.8 192.26,-99.8 192.26,-99.8 186.53,-99.8 180.8,-94.07 180.8,-88.33 180.8,-88.33 180.8,-76.87 180.8,-76.87 180.8,-71.13 186.53,-65.4 192.26,-65.4"></path>
+</g>
+<!-- game over&#45;&gt;game player detail -->
+<g id="edge24" class="edge transition">
+<title>game over-&gt;game player detail</title>
+<path fill="none" stroke="black" d="M233.77,-128.81C233.06,-126.16 232.44,-123.43 232.05,-120.8 231.56,-117.59 231.37,-115.79 231.87,-111.87"></path>
+<polygon fill="black" stroke="black" points="235.27,-112.73 233.52,-102.28 228.37,-111.55 235.27,-112.73"></polygon>
+<text text-anchor="middle" x="233.43" y="-111.8" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+</g>
+<!-- game player detail&#45;&gt;game over -->
+<g id="edge26" class="edge transition">
+<title>game player detail-&gt;game over</title>
+<path fill="none" stroke="black" d="M239.82,-100.63C239.82,-105.86 239.82,-111.76 239.82,-117.53"></path>
+<polygon fill="black" stroke="black" points="236.32,-117.44 239.82,-127.44 243.32,-117.44 236.32,-117.44"></polygon>
+<text text-anchor="middle" x="241.21" y="-111.8" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+</g>
+</g>
+</svg>

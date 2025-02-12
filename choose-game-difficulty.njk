@@ -1,0 +1,59 @@
+{% extends "default.njk" %}
+
+{% block main %}
+	<style x-data="{color: getParam('topic_color')}" 
+				 x-text="`body {background-color: #${color}};`"> 
+	</style>
+	<div class="subnav">
+		<div x-data="{topic: getParam('topic_name')}"
+					class="container-fluid" style="display: flex; align-items: center;">
+			<span 
+				class="material-symbols-outlined btn-back" 
+				style="cursor: pointer;"
+				onclick="window.history.back()"
+			>arrow_back_ios
+			</span>
+			<h4 class="margin-auto" x-text="titleCase(topic.replaceAll('-', ' '))"></h4>
+		</div>
+	</div>
+	<div class="position-relative p-5 text-center md-align-l">
+		<h1 class="inter pb-4 md-align-l">Choose a game difficulty</h1>
+
+		<div class="d-grid gap-2 col-lg-6 mx-auto" 
+					x-data="{topic: getParam('topic_name'), color: getParam('topic_color')}">
+			{% for d in ['easy', 'medium', 'hard'] %}
+				<a :href="`/display-question/?difficulty={{d}}&topic_name=${topic}&topic_color=${color}`"
+					class="btn btn-lg grey-btn align-middle mb-3"
+					type="button"
+				>
+					<b class="fs-4">{{d | capitalize}}</b>
+					<span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+				</a>
+			{% endfor %}
+			{# {% if params.mode=='single-player' %}
+				{% for d in ['easy', 'medium', 'hard'] %}
+					<button hx-get="display-question" 
+					hx-vals='{"difficulty":"{{d}}","topic":"{{params.topic}}","mode":"{{params.mode}}","color":"{{params.color}}"}'
+						hx-select="main" hx-target="main" hx-push-url="true"	
+						class="btn btn-lg grey-btn align-middle mb-3"
+						type="button"
+					>
+						<b class="fs-4">{{d | capitalize}}</b> <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+					</button>
+				{% endfor %}
+			{% else %}
+				{% for d in ['easy', 'medium', 'hard'] %}
+					<button hx-get="create-code"
+						hx-vals='{"difficulty":"{{d}}", "topic": "{{params.topic}}", "mode":"{{params.mode}}", "color":"{{params.color}}"}'
+						hx-select="main" hx-target="main" hx-push-url="true"
+						class="btn btn-lg grey-btn align-middle mb-2"
+						type="button"
+					>
+						<b class="fs-4">{{d | capitalize}}</b>
+						<span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+					</button>
+				{% endfor %}
+			{% endif %}  #}
+		</div>
+	</div>
+{% endblock %}
