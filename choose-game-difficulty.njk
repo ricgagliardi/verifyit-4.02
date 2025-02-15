@@ -22,7 +22,7 @@
 		<div class="d-grid gap-2 col-lg-6 mx-auto" 
 					x-data="{topic: getParam('topic_name'), color: getParam('topic_color')}">
 			{% for d in ['easy', 'medium', 'hard'] %}
-				<a :href="`/display-question/?difficulty={{d}}&topic_name=${topic}&topic_color=${color}`"
+				<a :href="`/prep-single-player/?difficulty={{d}}&topic_name=${topic}&topic_color=${color}`"
 					class="btn btn-lg grey-btn align-middle mb-3"
 					type="button"
 				>

@@ -15,7 +15,7 @@
 		</div>
 		<div class="position-relative p-5 text-center">
 			<h1 class="inter pb-4 md-align-l">Choose a game topic</h1>
-			<div x-data="{data: []}" x-init="data = await getData(`
+			<div x-data="{data: []}" x-init="data = await db.query(`
 						select topic_name, topic_color
 						from topic 
 						where status_name = 'Production' 

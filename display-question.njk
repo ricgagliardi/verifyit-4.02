@@ -1,174 +1,205 @@
 {% extends "default.njk" %}
 {% block head %}
-<script data-serverside>
-    console.log("Hello");
-    if (!params.play_id) {
-        const qs = sql.query(`
-            select json_group_array(qid) as q_list from (
-                select question_id as qid
-                from topic_question
-                where topic_name = :topic
-                order by random()
-                limit 10
-            );
-        `, params, 'get');
+	<style>
+			img {
+					object-fit: contain;
+					max-width: 100%;
+					height: auto;
+			}
 
-        const game = {
-            id: sql.ulid(),
-            play_mode: params.mode,
-            topic_name: params.topic,
-            room: params.room || 'n/a',
-            location: 'not implemented yet',
-            start_time: (new Date()).toISOString(),
-            end_time: null,
-            current_question: 0,
-            questions: qs.q_list,
-            score: 0,
-        };
-        const saveResult = sql.save('play', game, params);
-        payload.redirect = `display-question?play_id=${play.play_id}&difficulty=${params.difficulty}&topic=${params.topic}&mode=${params.mode}&color=${params.color}&score=${play.score}`;
-    } else {
-        payload.play = sql.query('select * from play where play_id = :play_id', params, 'get');
-        payload.color = params.color;
-        payload.score = params.score;
+			.button-container {
+					margin-top: 20px;
+					padding: 10px;
+			}
 
-        const color1 = params.color;
-        const question_id = JSON.parse(payload.play.questions)[payload.play.current_question];
-        payload.qid = question_id;
-        payload.question = sql.query(`
-            select title,
-            content,
-            REPLACE(REPLACE(choices, '\n', ''), '\r', '') AS choices,
-            hints,
-            correct_choice from question 
-            where question_id = :question_id
-        `, { question_id }, 'get');
-    }
-</script>
+			.btn {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					padding: 20px 15px; /* Increased padding on top and bottom */
+					width: 100%;
+					min-height: 70px; /* Changed from fixed height to min-height */
+					border: 1px solid black;
+					background-color: #e7e7e7;
+					text-align: center;
+					font-size: 18px;
+					margin: 10px auto;
+			}
+
+			.btn:hover {
+					background-color: #ffffff;
+			}
+
+			.btn:active, .btn:focus {
+					background-color: #ffffff !important;
+					color: #808080 !important;
+					outline: none;
+			}
+
+			.btn b {
+					font-size: 1.2rem;
+			}
+
+			.btn .material-symbols-outlined {
+					margin-left: 8px;
+			}
+
+			.fs-4 {
+					font-size: clamp(0.8rem, 2vw, 1rem);
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: normal; /* Changed from nowrap to normal */
+			}
+	</style>
 {% endblock %}
 {% block main %}
-<style>
-    body { background-color: #{{params.color}}; }
-</style>
-<div class="subnav">
-    <div class="container-fluid" style="display: flex; align-items: center;">
-        <span class="material-symbols-outlined btn-back" onclick="window.history.back()"
-            style="cursor: pointer;">arrow_back_ios</span>
-        <h4 class="margin-auto">{{ (params.topic) | replace('-', ' ')}}</h4>
-    </div>
-</div>
-
-<div class="position-relative p-5 text-center">
-    <br>
-    <div class="score-container my-4 d-flex align-items-center">
-		<h6 class="count me-3">{{play.current_question + 1}} of 10</h6>
-		<div class="progress-container w-75">
-			<div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="{{(play.current_question + 1) * 10}}" aria-valuemin="0"
-				aria-valuemax="100">
-				<div class="progress-bar" style="width: {{(play.current_question + 1) * 10}}%;"></div>
+	<div x-data="{play: {topic_name: 'loading...', question_detail: {title: '', content: ''}}}" x-init="play = await getPlay()">
+		<style x-text="`body {background-color: #${play.topic_color}};`"> 
+		</style>
+		<div class="subnav">
+			<div class="container-fluid" style="display: flex; align-items: center;">
+				<span class="material-symbols-outlined btn-back" onclick="window.history.back()"
+						style="cursor: pointer;">arrow_back_ios</span>
+				<h4 class="margin-auto" x-text="play.topic_name"></h4>
 			</div>
 		</div>
+		<div class="position-relative p-5 text-center">
+			<br>
+			<div class="score-container my-4 d-flex align-items-center">
+				<h6 class="count me-3" x-text="(play.current_question + 1).toString() + ' of 10'">1 of 10</h6>
+				<div class="progress-container w-75">
+					<div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+						<div class="progress-bar" style="width: 10%;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="score align-middle"><span class="material-symbols-outlined">star</span>0</div>
+			<br>
+			<div class="question-container text-center">
+				<h5 x-text="play.question_detail.title"
+						class="question-title" style="color: black; font-weight: bold; font-size: 30px">
+				</h5>
+				<div  x-html="play.question_detail.content"
+							class="question-content" style="color: black; font-weight: bold; font-size: 24px;"></div>
+			</div>
+			<template x-for="choice in play.question_detail.choices">
+				<button x-text="choice"></button> 
+			</template>
+		</div>
+
+<!-- 
+		<div class="position-relative p-5 text-center">
+			<br>
+			<div class="score-container my-4 d-flex align-items-center">
+				<h6 class="count me-3" x-text="(play.current_question + 1).toString() + ' of 10'">></h6>
+				<div class="progress-container w-75">
+					<div class="progress" role="progressbar" 
+								aria-label="Basic example" 
+								aria-valuenow="{{(play.current_question + 1) * 10}}" aria-valuemin="0"
+								aria-valuemax="100">
+					<div class="progress-bar" style="width: {{(play.current_question + 1) * 10}}%;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="score align-middle"><span class="material-symbols-outlined">star</span>{{params.score}}</div>
+			<br>
+			<div class="question-container text-center">
+				<h5 class="question-title" style="color: black; font-weight: bold; font-size: 30px">{{ question.title }}
+				<div class="question-content" style="color: black; font-weight: bold; font-size: 24px;">{{ question.content | safe }}</div>
+			</div>
+			<div class="button-container text-center"></div>
+		</div>
 	</div>
-    <div class="score align-middle"><span class="material-symbols-outlined">star</span>{{params.score}}</div>
-    <br>
-    <div class="question-container text-center">
-        <h5 class="question-title" style="color: black; font-weight: bold; font-size: 30px">{{ question.title }}
-        <div class="question-content" style="color: black; font-weight: bold; font-size: 24px;">{{ question.content | safe }}</div>
-    </div>
-    <div class="button-container text-center"></div>
-    <script>
-        initializeButtons();
-        function initializeButtons() {
-            const encodedHtml = "{{question.choices}}";
-            const parser = new DOMParser();
-            const decodedHtml = parser.parseFromString(encodedHtml, "text/html").body.textContent;
-            const tempDiv = document.createElement("div");
-            tempDiv.innerHTML = decodedHtml;
-            const listItems = tempDiv.querySelectorAll("li");
-            const buttonContainer = document.querySelector(".button-container");
-            var curr_points = listItems.length * 100;
+	 -->
+	<script>
+		var debug_play
+		async function getPlay() {
+			const play_id = getParam('play_id')
+			const buf = await db.query(`select * from play where play_id = ${play_id}`)
+			var play = buf[0]
+			const q_id = JSON.parse(play.questions)[play.current_question]
+			{# console.log('q_id', q_id) #}
+			const q_detail_statement = `
+				select title,
+				content,
+				REPLACE(REPLACE(choices, '\n', ''), '\r', '') AS choices,
+				hints,
+				correct_choice from question 
+				where question_id = ${q_id}
+			`
+			const q_detail = await db.query(q_detail_statement)
+			{# console.log('   q detail', q_detail[0]) #}
+			play.question_detail = q_detail[0]
 
-            for (let i = 0; i < listItems.length; i++) {
-                const li = listItems[i];
-                const button = document.createElement("button");
-                button.className = "btn btn-lg mb-2 align-middle";
-                button.type = "button";
-                button.innerHTML = `<b class="fs-4">${li.textContent.trim()}</b> <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>`;
-                button.onclick = () => {
-                    curr_points -= 100;
-                    if (i + 1 == "{{question.correct_choice}}") {
-                        button.style.backgroundColor = "#4CAF50";
-                        button.style.borderColor = "#388E3C";
-                        button.style.color = "white";
-                        const clickedText = li.textContent.trim();
-                        button.innerHTML = `<b class="fs-4">${clickedText}</b> <span class="material-symbols-outlined btn-arrow-icon">check_circle</span>`;
-                        button.disabled = true;
-                        setTimeout(function () {
-                            window.location.href = `https://test.playverifyit.org/followup?play_id={{play.play_id}}&difficulty={{params.difficulty}}&topic={{params.topic}}&mode={{params.mode}}&color={{params.color}}&score=${curr_points}`;
-                        }, 500);
-                    } else {
-                        button.style.backgroundColor = "#F44336";
-                        button.style.borderColor = "#D32F2F";
-                        button.style.color = "white";
-                        const clickedText = li.textContent.trim();
-                        button.innerHTML = `<b class="fs-4">${clickedText}</b> <span class="material-symbols-outlined btn-arrow-icon">cancel</span>`;
-                        button.disabled = true;
-                    }
-                };
-                buttonContainer.appendChild(button);
-            }
-        }
-    </script>
-<style>
+			const matches = play.question_detail.choices.match(/<li>(.*?)<\/li>/g);
+			play.question_detail.choices = matches.map(item => item.replace(/<\/?li>/g, ''));	
+			console.log('play', play)
+			debug_play = play // make it global for inspection
+			return play
+		}
+		{# var topic, color
+		db.query(`select * from play where play_id = ${play_id}`)
+			.then( play => {
+				console.log('play', play[0])
+				topic = play[0].topic_name
+			}) #}
+					{# payload.color = params.color;
+					payload.score = params.score;
 
-img {
-    object-fit: contain;
-    max-width: 100%;
-    height: auto;
-}
+					const color1 = params.color;
+					const question_id = JSON.parse(payload.play.questions)[payload.play.current_question];
+					payload.qid = question_id;
+					payload.question = sql.query(`
+							select title,
+							content,
+							REPLACE(REPLACE(choices, '\n', ''), '\r', '') AS choices,
+							hints,
+							correct_choice from question 
+							where question_id = :question_id
+					`, { question_id }, 'get');
+			} #}
+	</script>
+			<script>
+					initializeButtons();
+					function initializeButtons() {
+							const encodedHtml = "{{question.choices}}";
+							const parser = new DOMParser();
+							const decodedHtml = parser.parseFromString(encodedHtml, "text/html").body.textContent;
+							const tempDiv = document.createElement("div");
+							tempDiv.innerHTML = decodedHtml;
+							const listItems = tempDiv.querySelectorAll("li");
+							const buttonContainer = document.querySelector(".button-container");
+							var curr_points = listItems.length * 100;
 
-    .button-container {
-        margin-top: 20px;
-        padding: 10px;
-    }
-
-    .btn {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px 15px; /* Increased padding on top and bottom */
-        width: 100%;
-        min-height: 70px; /* Changed from fixed height to min-height */
-        border: 1px solid black;
-        background-color: #e7e7e7;
-        text-align: center;
-        font-size: 18px;
-        margin: 10px auto;
-    }
-
-    .btn:hover {
-        background-color: #ffffff;
-    }
-
-    .btn:active, .btn:focus {
-        background-color: #ffffff !important;
-        color: #808080 !important;
-        outline: none;
-    }
-
-    .btn b {
-        font-size: 1.2rem;
-    }
-
-    .btn .material-symbols-outlined {
-        margin-left: 8px;
-    }
-
-    .fs-4 {
-        font-size: clamp(0.8rem, 2vw, 1rem);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: normal; /* Changed from nowrap to normal */
-    }
-</style>
+							for (let i = 0; i < listItems.length; i++) {
+									const li = listItems[i];
+									const button = document.createElement("button");
+									button.className = "btn btn-lg mb-2 align-middle";
+									button.type = "button";
+									button.innerHTML = `<b class="fs-4">${li.textContent.trim()}</b> <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>`;
+									button.onclick = () => {
+											curr_points -= 100;
+											if (i + 1 == "{{question.correct_choice}}") {
+													button.style.backgroundColor = "#4CAF50";
+													button.style.borderColor = "#388E3C";
+													button.style.color = "white";
+													const clickedText = li.textContent.trim();
+													button.innerHTML = `<b class="fs-4">${clickedText}</b> <span class="material-symbols-outlined btn-arrow-icon">check_circle</span>`;
+													button.disabled = true;
+													setTimeout(function () {
+															window.location.href = `https://test.playverifyit.org/followup?play_id={{play.play_id}}&difficulty={{params.difficulty}}&topic={{params.topic}}&mode={{params.mode}}&color={{params.color}}&score=${curr_points}`;
+													}, 500);
+											} else {
+													button.style.backgroundColor = "#F44336";
+													button.style.borderColor = "#D32F2F";
+													button.style.color = "white";
+													const clickedText = li.textContent.trim();
+													button.innerHTML = `<b class="fs-4">${clickedText}</b> <span class="material-symbols-outlined btn-arrow-icon">cancel</span>`;
+													button.disabled = true;
+											}
+									};
+									buttonContainer.appendChild(button);
+							}
+					}
+			</script>
 {% endblock %}

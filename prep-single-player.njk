@@ -1,0 +1,56 @@
+{% extends "default.njk" %}
+
+{% block main %}
+	<script>
+		const difficulty = getParam('difficulty')
+		const topic = getParam('topic_name')
+		const color = getParam('topic_color')
+		console.log('ready to prep for game', difficulty, topic, color)
+		db.query(`
+			select json_group_array(qid) as q_list from (
+					select question_id as qid
+					from topic_question
+					where topic_name = '${topic}'
+					order by random()
+					limit 10
+			);
+		`).then( qs => {
+			const statement = `
+INSERT INTO "play" (
+    play_mode,
+    topic_name,
+		topic_color,
+    room,
+    location,
+    start_time,
+    end_time,
+    current_question,
+    questions,
+    score
+  )
+VALUES
+  (
+    'single-player',
+    '${topic}',
+		'${color}',
+    'n/a',
+    'n/a',
+    '${(new Date()).toISOString()}',
+    NULL,
+    0,
+    '${qs[0].q_list}',
+    0
+  )
+;
+select last_insert_rowid() as play_id;
+`
+			console.log('statement', statement)
+			db.query(statement).then( result => {
+				console.log('result', result)
+				location.assign(`/display-question/?play_id=${result[0].play_id}`)
+			})
+			// ?play_id=${play.play_id}&difficulty=${params.difficulty}&topic=${params.topic}&mode=${params.mode}&color=${params.color}&score=${play.score}`;
+		})
+
+	</script>
+{% endblock %}
