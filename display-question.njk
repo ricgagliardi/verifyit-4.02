@@ -1,61 +1,25 @@
 {% extends "default.njk" %}
 {% block head %}
 	<style>
-			img {
-					object-fit: contain;
-					max-width: 100%;
-					height: auto;
-			}
-
-			.button-container {
-					margin-top: 20px;
-					padding: 10px;
-			}
-
-			.btn {
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					padding: 20px 15px; /* Increased padding on top and bottom */
-					width: 100%;
-					min-height: 70px; /* Changed from fixed height to min-height */
-					border: 1px solid black;
-					background-color: #e7e7e7;
-					text-align: center;
-					font-size: 18px;
-					margin: 10px auto;
-			}
-
-			.btn:hover {
-					background-color: #ffffff;
-			}
-
-			.btn:active, .btn:focus {
-					background-color: #ffffff !important;
-					color: #808080 !important;
-					outline: none;
-			}
-
-			.btn b {
-					font-size: 1.2rem;
-			}
-
-			.btn .material-symbols-outlined {
-					margin-left: 8px;
-			}
-
-			.fs-4 {
-					font-size: clamp(0.8rem, 2vw, 1rem);
-					overflow: hidden;
-					text-overflow: ellipsis;
-					white-space: normal; /* Changed from nowrap to normal */
-			}
-	</style>
+		dialog {
+			pointer-events: none;
+			opacity: 0;
+			transition: opacity 0.5s;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+		}
+		dialog[open] {
+			opacity: 1;
+			pointer-events: inherit;
+		}
+		</style>
 {% endblock %}
 {% block main %}
-	<div x-data="{play: {topic_name: 'loading...', question_detail: {title: '', content: ''}}}" x-init="play = await getPlay()">
-		<style x-text="`body {background-color: #${play.topic_color}};`"> 
-		</style>
+	<div x-data="{play: {topic_name: 'loading...', question_detail: {title: '', content: ''}}}" 
+				x-init="play = await getPlay()">
+		{# <style x-text="`body {background-color: #${play.topic_color}};`"> </style> #}
 		<div class="subnav">
 			<div class="container-fluid" style="display: flex; align-items: center;">
 				<span class="material-symbols-outlined btn-back" onclick="window.history.back()"
@@ -82,37 +46,51 @@
 				<div  x-html="play.question_detail.content"
 							class="question-content" style="color: black; font-weight: bold; font-size: 24px;"></div>
 			</div>
-			<template x-for="choice in play.question_detail.choices">
-				<button x-text="choice"></button> 
-			</template>
-		</div>
+			<template x-for="(choice, idx) in play.question_detail.choices">
+				<button class="btn btn-lg mb-2 align-middle" type="button"
+								:style="`width:100%; background-color: #${play.topic_color}`"
+								@click="checkIfCorrect"  :data-idx="idx + 1">
+					<span data-correct hidden class="material-symbols-outlined">check_circle</span>
+					<span data-incorrect hidden class="material-symbols-outlined">cancel</span>
+					<b class="fs-4" x-text="choice"></b> 
+					<span class="material-symbols-outlined  btn-arrow-icon">arrow_forward_ios</span>
+				</button>
 
-<!-- 
-		<div class="position-relative p-5 text-center">
-			<br>
-			<div class="score-container my-4 d-flex align-items-center">
-				<h6 class="count me-3" x-text="(play.current_question + 1).toString() + ' of 10'">></h6>
-				<div class="progress-container w-75">
-					<div class="progress" role="progressbar" 
-								aria-label="Basic example" 
-								aria-valuenow="{{(play.current_question + 1) * 10}}" aria-valuemin="0"
-								aria-valuemax="100">
-					<div class="progress-bar" style="width: {{(play.current_question + 1) * 10}}%;"></div>
-					</div>
+
+
+
+			</template>
+			<dialog id="followup">
+				<div class="position-relative p-5 text-center">
+						<div class="question-container text-center">
+								<h5 class="question-title">Correct!</h5>
+								<div class="question-content" x-html="play.question_detail.followup"></div>
+						</div>
+						<button class="btn btn-lg mb-2 " style="width:80%" type="button" @click="nextQuestion">
+								<!-- {% if play.current_question == 10 %}
+										hx-get="results?play_id={{ playid }}&topic={{ params.topic }}&color={{ params.color }}"
+								{% else %}
+										hx-get="display-question?play_id={{ play.play_id }}&difficulty={{ params.difficulty }}&topic={{ params.topic }}&mode={{ params.mode }}&color={{ params.color }}&score={{ play.score }}"
+								{% endif %}
+								hx-select="main" hx-target="main" hx-push-url="true" -->
+								
+								<!-- {% if play.current_question == 10 %}
+										<b class="fs-4">View Results</b>
+								{% else %}
+										<b class="fs-4">Next Question</b>
+								{% endif %} -->
+								Next Question
+								<span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+						</button>
 				</div>
-			</div>
-			<div class="score align-middle"><span class="material-symbols-outlined">star</span>{{params.score}}</div>
-			<br>
-			<div class="question-container text-center">
-				<h5 class="question-title" style="color: black; font-weight: bold; font-size: 30px">{{ question.title }}
-				<div class="question-content" style="color: black; font-weight: bold; font-size: 24px;">{{ question.content | safe }}</div>
-			</div>
-			<div class="button-container text-center"></div>
+	
+			</dialog>
 		</div>
 	</div>
-	 -->
+
 	<script>
-		var debug_play
+		var g_play
+
 		async function getPlay() {
 			const play_id = getParam('play_id')
 			const buf = await db.query(`select * from play where play_id = ${play_id}`)
@@ -120,86 +98,54 @@
 			const q_id = JSON.parse(play.questions)[play.current_question]
 			{# console.log('q_id', q_id) #}
 			const q_detail_statement = `
-				select title,
-				content,
-				REPLACE(REPLACE(choices, '\n', ''), '\r', '') AS choices,
-				hints,
-				correct_choice from question 
+				select title, content, choices, hints, correct_choice, followup
+				from question
 				where question_id = ${q_id}
 			`
 			const q_detail = await db.query(q_detail_statement)
 			{# console.log('   q detail', q_detail[0]) #}
 			play.question_detail = q_detail[0]
 
-			const matches = play.question_detail.choices.match(/<li>(.*?)<\/li>/g);
-			play.question_detail.choices = matches.map(item => item.replace(/<\/?li>/g, ''));	
+			const parser = new DOMParser()
+			const doc = parser.parseFromString(play.question_detail.choices, 'text/html')
+			const listItems = doc.querySelectorAll('li')
+			play.question_detail.choices = Array.from(listItems, li => li.textContent)
+
+			{# const matches = play.question_detail.choices.match(/<li>(.*?)<\/li>/g);
+			play.question_detail.choices = matches.map(item => item.replace(/<\/?li>/g, ''));	 #}
+
 			console.log('play', play)
-			debug_play = play // make it global for inspection
+			g_play = play // make it global for inspection
 			return play
 		}
-		{# var topic, color
-		db.query(`select * from play where play_id = ${play_id}`)
-			.then( play => {
-				console.log('play', play[0])
-				topic = play[0].topic_name
-			}) #}
-					{# payload.color = params.color;
-					payload.score = params.score;
 
-					const color1 = params.color;
-					const question_id = JSON.parse(payload.play.questions)[payload.play.current_question];
-					payload.qid = question_id;
-					payload.question = sql.query(`
-							select title,
-							content,
-							REPLACE(REPLACE(choices, '\n', ''), '\r', '') AS choices,
-							hints,
-							correct_choice from question 
-							where question_id = :question_id
-					`, { question_id }, 'get');
-			} #}
+		async function checkIfCorrect(e) {
+			const target = e.target.nodeName == 'BUTTON' ? e.target : e.target.parentNode
+			const choiceNo = target.dataset.idx
+			const isCorrect = g_play.question_detail.correct_choice == choiceNo
+			console.log('checkIfCorrect', target.nodeName, choiceNo, isCorrect)
+
+			target.classList.add('animate__animated', 'animate__pulse')
+				await delay(2000)
+			target.classList.add(isCorrect ? 'correct-btn' : 'wrong-btn')
+			if (isCorrect) {
+				target.querySelector('[data-correct]').hidden = false
+				await delay(1000)
+				$('#followup').showModal()
+			}
+			else {
+				target.querySelector('[data-incorrect]').hidden = false
+			}
+		}
+
+		async function nextQuestion() {
+			const updateResult = await db.query(`
+				update play set current_question = current_question + 1
+				where play_id = ${g_play.play_id}
+			`)
+			console.log('nextQuestion', g_play.play_id, updateResult)
+			location.reload()
+		}
 	</script>
-			<script>
-					initializeButtons();
-					function initializeButtons() {
-							const encodedHtml = "{{question.choices}}";
-							const parser = new DOMParser();
-							const decodedHtml = parser.parseFromString(encodedHtml, "text/html").body.textContent;
-							const tempDiv = document.createElement("div");
-							tempDiv.innerHTML = decodedHtml;
-							const listItems = tempDiv.querySelectorAll("li");
-							const buttonContainer = document.querySelector(".button-container");
-							var curr_points = listItems.length * 100;
 
-							for (let i = 0; i < listItems.length; i++) {
-									const li = listItems[i];
-									const button = document.createElement("button");
-									button.className = "btn btn-lg mb-2 align-middle";
-									button.type = "button";
-									button.innerHTML = `<b class="fs-4">${li.textContent.trim()}</b> <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>`;
-									button.onclick = () => {
-											curr_points -= 100;
-											if (i + 1 == "{{question.correct_choice}}") {
-													button.style.backgroundColor = "#4CAF50";
-													button.style.borderColor = "#388E3C";
-													button.style.color = "white";
-													const clickedText = li.textContent.trim();
-													button.innerHTML = `<b class="fs-4">${clickedText}</b> <span class="material-symbols-outlined btn-arrow-icon">check_circle</span>`;
-													button.disabled = true;
-													setTimeout(function () {
-															window.location.href = `https://test.playverifyit.org/followup?play_id={{play.play_id}}&difficulty={{params.difficulty}}&topic={{params.topic}}&mode={{params.mode}}&color={{params.color}}&score=${curr_points}`;
-													}, 500);
-											} else {
-													button.style.backgroundColor = "#F44336";
-													button.style.borderColor = "#D32F2F";
-													button.style.color = "white";
-													const clickedText = li.textContent.trim();
-													button.innerHTML = `<b class="fs-4">${clickedText}</b> <span class="material-symbols-outlined btn-arrow-icon">cancel</span>`;
-													button.disabled = true;
-											}
-									};
-									buttonContainer.appendChild(button);
-							}
-					}
-			</script>
 {% endblock %}

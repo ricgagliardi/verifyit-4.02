@@ -9,8 +9,9 @@
 		db.query(`
 			select json_group_array(qid) as q_list from (
 					select question_id as qid
-					from topic_question
+					from topic_question natural join question
 					where topic_name = '${topic}'
+					and lower(difficulty) = '${difficulty}'
 					order by random()
 					limit 10
 			);
@@ -19,6 +20,7 @@
 INSERT INTO "play" (
     play_mode,
     topic_name,
+		difficulty,
 		topic_color,
     room,
     location,
@@ -32,6 +34,7 @@ VALUES
   (
     'single-player',
     '${topic}',
+		'${difficulty}',
 		'${color}',
     'n/a',
     'n/a',
