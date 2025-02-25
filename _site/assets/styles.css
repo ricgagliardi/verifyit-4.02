@@ -1,0 +1,268 @@
+.bg-light-grey {
+    background-color: #f6f5f0;
+}
+
+.bg-light-purple {
+    background-color: #E3D7FF;
+}
+
+.bg-light-yellow {
+    background-color: #FFEDB8;
+}
+
+.bg-lime {
+    background-color: #D5F382;
+}
+
+b {
+    font-weight: 600;
+}
+
+.inter {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.verify-navy,
+.verify-navy:hover,
+.verify-navy:active {
+    background-color: #212E5B;
+}
+
+.verify-red,
+.verify-red:hover,
+.verify-red:active {
+    background-color: #D71218;
+}
+
+.lime-btn,
+.lime-btn:hover,
+.lime-btn:active {
+    background-color: #D5F382 !important;
+}
+
+.purple-btn,
+.purple-btn:hover,
+.purple-btn:active {
+    background-color: #A482F3 !important;
+}
+
+.yellow-btn,
+.yellow-btn:hover,
+.yellow-btn:active {
+    background-color: #F8CF56 !important;
+}
+
+.green-btn,
+.green-btn:hover,
+.green-btn:active {
+    background-color: #2FB394 !important;
+}
+
+.teal-btn,
+.teal-btn:hover,
+.teal-btn:active {
+    background-color: #0DB6EC !important;
+}
+
+.coral-btn,
+.coral-btn:hover,
+.coral-btn:active {
+    background-color: #FF8383 !important;
+}
+
+.blue-btn,
+.blue-btn:hover,
+.blue-btn:active {
+    background-color: #1278FF !important;
+}
+
+.grey-btn,
+.grey-btn:hover,
+.grey-btn:active {
+    background-color: #E7E7E7 !important;
+}
+
+.correct-btn,
+.correct-btn:hover,
+.correct-btn:active {
+    background-color: #8BED75 !important;
+}
+
+.wrong-btn,
+.wrong-btn:hover,
+.wrong-btn:active {
+    background-color: #FFAEAE !important;
+}
+
+.btn-arrow-icon {
+    position: absolute;
+    right: 16px;
+}
+
+.align-middle {
+    display: flex;
+    align-items: center;
+}
+
+.btn,
+.btn:hover {
+    border: 1px solid #000;
+    color: black;
+}
+
+.btn:active {
+    transition: filter 0.5s ease-out;
+    opacity: 0.8;
+}
+
+.btn {
+    border-radius: 1.5rem;
+    text-align: left;
+    padding: 1rem 1rem 1rem 1.5rem;
+    position: relative;
+}
+
+.btn-detail {
+    padding: 1.5rem;
+}
+
+@media (max-width: 768px) { 
+    .md-align-l {
+        text-align: left !important;
+    }
+    .p-5 {
+        padding: 1.5rem !important;
+    }
+}
+
+nav {
+    border-bottom: 1px solid #000;
+}
+
+.navbar {
+    padding: 0.2em 0;
+}
+
+.nav-content {
+    padding: 2px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.lwv-icon {
+    height: 48px;
+    width: 48px;
+    position: relative;
+    left: 10px;
+}
+
+.lwv-img {
+    width: 48px;
+    padding: 5px 0 0 5px;
+    cursor: pointer;
+}
+
+.me-auto {
+    margin-left: auto !important;
+    margin-right: 0 !important;
+}
+
+.navbar-toggler {
+    background-color: #A482F3;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    /* border: none; */
+}
+
+.navbar-toggler-icon {
+    width: 19px;
+    height: 19px;
+    display: block;
+    background-image: none;
+    margin-left: -6px;
+    margin-top: -5px;
+}
+
+.subnav {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid #000;
+}
+
+.margin-auto {
+    margin: auto;
+}
+
+.btn-back {
+    position: absolute;
+    cursor: pointer;
+}
+
+.quiz-img img {
+    border-radius: 1.5rem;
+    max-width: 100%;
+    width: auto;
+    max-height: 300px;
+}
+
+.score-container {
+    display: flex;
+    align-items: center;
+}
+
+.score-container .count {
+    width: 15%;
+    margin-bottom: 0;
+}
+
+.score-container .progress-container {
+    width: 85%;
+}
+
+.progress-container .progress {
+    border: 1px solid #000;
+}
+
+.progress-container .progress-bar {
+    background-color: #A482F3;
+}
+
+.score {
+    border-radius: 1.5rem;
+    border: 1px solid #000;
+    background-color: #D5F382;
+    font-weight: 600;
+    padding: 0.5rem;
+    max-width: 80px;
+    min-width: 70px;
+    margin: auto;
+}
+
+/* Style for the question container */
+.question-container {
+    background-color: transparent; /* Remove background color */
+    border: none; /* Remove border */
+    box-shadow: none; /* Remove shadow */
+    padding: 0; /* Remove padding */
+    margin: 20px auto; /* Center the container and add spacing */
+    max-width: 800px; /* Keep maximum width for readability */
+	}
+	
+	/* Style for the question title */
+	.question-title {
+		font-size: 1.5rem; /* Slightly larger font size */
+		font-weight: bold; /* Make the question title bold */
+		color: #333333; /* Dark gray color for text */
+		margin-bottom: 10px; /* Add space below the title */
+	}
+	
+	/* Style for the question content */
+	.question-content {
+		font-size: 1.2rem; /* Adjust font size for content */
+		color: #555555; /* Medium gray for content text */
+		line-height: 1.6; /* Add line spacing for readability */
+	}

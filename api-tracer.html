@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>SQLiteCloud API Tracer</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+		<!-- <script src="https://cdn.jsdelivr.net/npm/@sqlitecloud/drivers/lib/index.min.js"></script> -->
+		<script src="https://cdn.jsdelivr.net/npm/@sqlitecloud/drivers@1.0.417/lib/index.min.js"></script>
+		<!-- <script src="https://cdn.jsdelivr.net/npm/@sqlitecloud/drivers/lib/sqlitecloud.drivers.js"></script> -->
+		<!-- <script src="https://cdn.jsdelivr.net/npm/@sqlitecloud/drivers@1.0.406/lib/sqlitecloud.drivers.js"></script> -->
+
+	</head>
+
+	<body>
+		<main>
+		</main>
+		<script type="module">
+			async function connect(dbName) {
+				// console.log('host', location.hostname)
+				var db = new sqlitecloud.Database(
+            {
+            	gatewayUrl: `wss://cw8lr7eknz.g5.sqlite.cloud:4000`,
+            	connectionstring: `sqlitecloud://cw8lr7eknz.g5.sqlite.cloud:8860/${dbName}?apikey=8EPKxzhZCotKCkO5BTVs3jBtwbHvoo9ObNwG4Pc7J5g`,
+						},
+            (error) => {
+              if (error) {
+                console.warn(`Connection Error:  ${error}`);
+              } else {
+                console.log('db connected');
+              }
+            }
+          )
+					return db
+			}
+
+			async function pubsub(db) {
+				const pubSub = await db.getPubSub()
+				console.log('pubSub', pubSub)
+				// await pubSub.listen(PUBSUB_ENTITY_TYPE.TABLE, 'play', (error, results, data) => {
+				// 	if (results) {
+				// 		// Changes on albums table will be received here as JSON object
+				// 		console.log('Received message:', results)
+				// 	}
+				// })				
+			}
+
+			async function main() {
+				// connect('verifyit4.db').then( db => {
+				// 	// console.log('db', db) 
+				// 	db.sql('select * from topic;').then (result => console.log('result', result))
+				// })
+				const db = await connect('verifyit4.db')
+				const result = await db.sql('select * from topic;')
+				console.log('result', result)
+
+				await pubsub(db)
+			}
+
+			// main()
+		</script>
+	</body>
+</html>
