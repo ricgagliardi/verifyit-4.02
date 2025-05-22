@@ -1,0 +1,53 @@
+<main hx-target="main" hx-select="main" hx-swap="outerHTML">
+  <div class="position-relative p-5 text-center">
+    <h1 class="inter pb-4 md-align-l">Enter your name</h1>
+    <input id="first-name" type="text" class="form-control" placeholder="First name" style="border-radius: 1.5rem; padding: 1rem; border: 1px solid #000; width: 50%; margin: auto; margin-bottom: 1rem;">
+    <input id="last-name" type="text" class="form-control" placeholder="Last name" style="border-radius: 1.5rem; padding: 1rem; border: 1px solid #000; width: 50%; margin: auto;">
+    <div class="d-grid gap-2 col-lg-6 mx-auto" style="margin-top: 2rem;">
+      <button id="continue-btn" 
+              class="btn btn-lg grey-btn align-middle mb-3 thin-btn" 
+              style="padding: 0.5rem 1rem; pointer-events: none; opacity: 0.5;" 
+              type="button"
+              onclick="handleContinueClick(event)">
+        <b class="fs-5">Continue</b>
+        <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function checkInput() {
+      const firstNameInput = document.getElementById('first-name');
+      const lastNameInput = document.getElementById('last-name');
+      const button = document.getElementById('continue-btn');
+      if (firstNameInput.value.trim() !== '' && lastNameInput.value.trim() !== '') {
+        button.style.pointerEvents = 'auto';
+        button.style.opacity = 1;
+      } else {
+        button.style.pointerEvents = 'none';
+        button.style.opacity = 0.5;
+      }
+    }
+
+    document.getElementById('first-name').addEventListener('input', checkInput);
+    document.getElementById('last-name').addEventListener('input', checkInput);
+
+    function handleContinueClick(event) {
+      const firstName = document.getElementById("first-name").value;
+      const lastName = document.getElementById("last-name").value;
+      const mode = "{{ params.mode }}";
+      const role = "{{ params.role }}";
+      
+      htmx.ajax('GET', '/enter-room-name', {
+        values: {
+          first_name: firstName,
+          last_name: lastName,
+          mode: mode,
+          role: role
+        },
+        target: 'main',
+        swap: 'outerHTML'
+      });
+    }
+  </script>
+</main>

@@ -1,0 +1,143 @@
+{{ if params.next }}
+	{{ set buf = db.prepare('update player set current_question = current_question + 1 where player_id = ?')
+		  	.run(params.player_id)
+	}}
+{{ /if }}
+
+{{ set my_game = db.prepare(`
+		select 
+			player_name, 
+			current_question, 
+			scores, 
+			game_mode, 
+			topic_name, 
+			room_name, 
+			difficulty, 
+			topic_color,
+			questions
+		from player natural join game 
+		where player_id = ?
+	`)
+		.get(params.player_id)
+}}
+
+{{ set full_question = db.prepare(`
+		select title, content, choices, hints, correct_choice, followup
+		from question
+		where question_id = ?
+	`)
+		.get(JSON.parse(my_game.questions)[my_game.current_question])
+}}
+{{ set question_choices = full_question.choices
+			.split(/<li[^>]*>([\s\S]*?)<\/li>/)
+			.filter( s => !s.startsWith('<') && s.length > 0) 
+}}
+
+{{ layout "default.vto" }}
+<main hx-target="main" hx-select="main" hx-swap="outerHTML">
+	<style>
+		dialog {
+			pointer-events: none;
+			opacity: 0;
+			transition: opacity 0.5s;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+		}
+		dialog[open] {
+			opacity: 1;
+			pointer-events: inherit;
+		}
+	</style>
+	<div>
+		<div class="subnav">
+			<div class="container-fluid" style="display: flex; align-items: center;">
+				<span class="material-symbols-outlined btn-back" onclick="window.history.back()"
+						style="cursor: pointer;">arrow_back_ios</span>
+				<h4 class="margin-auto">{{ my_game.topic_name }}</h4>
+			</div>
+		</div>
+		<div class="position-relative p-5 text-center">
+			<br>
+			<div class="score-container my-4 d-flex align-items-center">
+				<h6 class="count me-3">
+					{{ my_game.current_question + 1 }} of 10
+				</h6>
+				<div class="progress-container w-75">
+					<div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+						<div class="progress-bar" style="width: 10%;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="score align-middle"><span class="material-symbols-outlined">star</span>0</div>
+			<br>
+			<div class="question-container text-center">
+				<h5 class="question-title" style="color: black; font-weight: bold; font-size: 30px">
+					{{ full_question.title }}
+				</h5>
+				<div class="question-content" style="color: black; font-weight: bold; font-size: 24px;">
+					{{ full_question.content }}
+				</div>
+			</div>
+			{{ for idx, choice of question_choices }}
+				<button class="btn btn-lg mb-2 align-middle" type="button"
+								style="width:100%; background-color: #{{ my_game.topic_color}}"
+								onclick="checkIfCorrect(event)"  data-idx="{{ idx + 1 }}">
+					<span data-correct hidden class="material-symbols-outlined">check_circle</span>
+					<span data-incorrect hidden class="material-symbols-outlined">cancel</span>
+					<b class="fs-4">{{ choice }}</b> 
+					<span class="material-symbols-outlined  btn-arrow-icon">arrow_forward_ios</span>
+				</button>
+			{{ /for }}
+
+			<dialog id="followup">
+				<div class="position-relative p-5 text-center">
+					<div class="question-container text-center">
+						<h5 class="question-title">Correct!</h5>
+						<div class="question-content">
+							{{ full_question.followup }}
+						</div>
+					</div>
+					{{ if my_game.current_question == 9 }}
+						<button hx-get="display-score" hx-vals='{"player_id": {{ params.player_id }}}'
+									  class="btn btn-lg mb-2 " style="width:80%" type="button">
+							<b class="fs-4">View Results</b>
+							<span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+						</button>
+					{{ else }}
+						<button hx-get="display-question" 
+										hx-vals='{"player_id": {{ params.player_id }}, "next": true}'
+									  class="btn btn-lg mb-2 " style="width:80%" type="button">
+							<b class="fs-4">Next Question</b>
+							<span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+						</button>
+					{{ /if }}
+				</div>
+	
+			</dialog>
+		</div>
+	</div>
+	<script>
+		const delay = t => new Promise(resolve => setTimeout(resolve, t))
+		
+		async function checkIfCorrect(e) {
+			const target = e.target.nodeName == 'BUTTON' ? e.target : e.target.parentNode
+			const choiceNo = target.dataset.idx
+			const isCorrect = choiceNo == "{{ full_question.correct_choice }}"
+			console.log('checkIfCorrect', target.nodeName, choiceNo, isCorrect)
+
+            await delay(200)
+			target.classList.add(isCorrect ? 'correct-btn' : 'wrong-btn')
+			if (isCorrect) {
+				target.querySelector('[data-correct]').hidden = false
+				await delay(100)
+				document.querySelector('#followup').showModal()
+			}
+			else {
+				target.querySelector('[data-incorrect]').hidden = false
+			}
+		}
+	</script>
+</main>
+{{ /layout }}

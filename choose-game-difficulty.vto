@@ -1,0 +1,62 @@
+{{ function titleCase(str) }}
+  {{ str.toLowerCase().split(' ').map( w => w.replace(w[0], w[0].toUpperCase()) ).join(' ') }}
+{{ /function }}
+
+{{ layout "default.vto" }}
+<main hx-target="main" hx-select="main" hx-swap="outerHTML">																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																						
+  <style>
+    body { background-color: #{{ params.topic_color }} }
+  </style>
+  <div class="subnav">
+    <div class="container-fluid" style="display: flex; align-items: center;">
+      <span 
+        class="material-symbols-outlined btn-back" 
+        style="cursor: pointer;"
+        onclick="window.history.back()"
+      >arrow_back_ios
+      </span>
+      <h4 class="margin-auto">{{ params.topic_name }}</h4>
+    </div>
+  </div>
+  <div class="position-relative p-5 text-center md-align-l">
+    <h1 class="inter pb-4 md-align-l">Choose a game difficulty</h1>
+
+    <div class="d-grid gap-2 col-lg-6 mx-auto" >
+      {{ for d of ['easy', 'medium', 'hard'] }}
+        {{ if params.mode == "single-player" }}
+          <a  hx-get="/game-room-ready"
+              hx-vals='{
+                "difficulty": "{{ d }}",
+                "topic_name": "{{ params.topic_name }}",
+                "topic_color": "{{ params.topic_color }}",
+                "mode": "{{ params.mode }}"
+              }'
+              class="btn btn-lg grey-btn align-middle mb-3"
+              type="button"
+          >
+            <b class="fs-4">{{ titleCase(d) }}</b>
+            <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+          </a>
+        {{ else if params.mode == "multi-player" }}
+          <a  hx-get="/host-waiting-room"
+              hx-vals='{
+                "difficulty": "{{ d }}",
+                "topic_name": "{{ params.topic_name }}",
+                "topic_color": "{{ params.topic_color }}",
+                "mode": "{{ params.mode }}",
+                "role": "{{ params.role }}",
+                "game_id": "{{ params.game_id }}",
+				"room_name": "{{ params.room_name }}"
+              }'
+              class="btn btn-lg grey-btn align-middle mb-3"
+              type="button"
+          >
+            <b class="fs-4">{{ titleCase(d) }}</b>
+            <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+          </a>
+        {{ /if }}
+      {{ /for }}
+    </div>
+  </div>
+</main>
+{{ /layout }}

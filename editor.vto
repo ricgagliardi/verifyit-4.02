@@ -1,0 +1,152 @@
+{{ layout "/default.vto" }} 
+<main hx-target="main" hx-select="main" hx-swap="outerHTML">
+	<style>
+			body {
+					background-color: #f8f9fa;
+					font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			}
+			
+			.login-dialog {
+					display: none;
+					position: fixed;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+					background-color: rgba(0, 0, 0, 0.5);
+					z-index: 1000;
+					justify-content: center;
+					align-items: center;
+			}
+			
+			.login-dialog.show {
+					display: flex;
+			}
+			
+			.login-container {
+					background-color: white;
+					border-radius: 8px;
+					box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+					padding: 30px;
+					width: 100%;
+					max-width: 400px;
+			}
+			
+			.login-header {
+					text-align: center;
+					margin-bottom: 25px;
+			}
+			
+			.login-title {
+					font-weight: 600;
+					color: #343a40;
+					margin-bottom: 5px;
+			}
+			
+			.btn-sign-in {
+					background-color: #0d6efd;
+					border: none;
+					width: 100%;
+					padding: 12px;
+					font-weight: 500;
+					transition: all 0.3s ease;
+			}
+			
+			.btn-sign-in:hover {
+					background-color: #0b5ed7;
+					transform: translateY(-2px);
+			}
+			
+			.form-control {
+					padding: 12px;
+					border: 1px solid #dee2e6;
+			}
+			
+			.form-floating > label {
+					padding-left: 12px;
+			}
+	</style>
+	<div class="text-center" style="margin-top:20px;margin-bottom:20px;">
+		<img src="/assets/logo.png" alt="logo" style="height: 5rem;">
+		<div style="color: #2E6099; font-size: xx-large;display: inline;font-weight: bold;">VerifyIt!</div>		
+	</div>
+    <div id="loginDialog" class="login-dialog">
+        <div class="login-container">
+            <div class="login-header">
+                <h4 class="login-title">Sign In</h4>
+                <p class="text-muted">Enter your credentials to continue</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="fullName" placeholder="Full Name" required>
+                    <label for="fullName">Full Name</label>
+                </div>
+                
+                <div class="form-floating mb-4">
+                    <input type="password" class="form-control" id="passcode" placeholder="Passcode" required>
+                    <label for="passcode">Passcode</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-sign-in">Sign In</button>
+            </form>
+            
+            <div class="text-center mt-3">
+                <button id="closeLoginBtn" class="btn btn-link text-decoration-none">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap & JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+				function gotoMenu(auth) {
+					htmx.ajax('GET', `/editor-menu?auth=${auth}`, {target: 'body', select: 'main'})
+				}
+        document.addEventListener('DOMContentLoaded', function() {
+            const openLoginBtn = document.getElementById('openLoginBtn');
+            const closeLoginBtn = document.getElementById('closeLoginBtn');
+            const loginDialog = document.getElementById('loginDialog');
+            const loginForm = document.getElementById('loginForm');
+            
+						console.log('auth', sessionStorage.auth)
+						if (!sessionStorage.auth) {
+							{{# console.log('clearing fields') #}}
+							document.getElementById('fullName').value = ''
+							document.getElementById('passcode').value = ''
+							loginDialog.classList.add('show')
+						}
+						else gotoMenu(sessionStorage.auth)
+
+            {{# // Open dialog
+            openLoginBtn.addEventListener('click', function() {
+                loginDialog.classList.add('show');
+            }); #}}
+            
+            // Close dialog
+            closeLoginBtn.addEventListener('click', function() {
+                loginDialog.classList.remove('show');
+            });
+            
+            // Close dialog when clicking outside
+            loginDialog.addEventListener('click', function(e) {
+                if (e.target === loginDialog) {
+                    loginDialog.classList.remove('show');
+                }
+            });
+            
+            // Handle form submission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const fullName = document.getElementById('fullName').value;
+                const passcode = document.getElementById('passcode').value;
+                
+								sessionStorage.auth = btoa(fullName + '::' + passcode)
+                console.log('Login attempt:', { fullName, passcode }, sessionStorage.auth);
+                
+                gotoMenu(sessionStorage.auth)
+            });
+        });
+    </script>
+</main>
+{{ /layout }}

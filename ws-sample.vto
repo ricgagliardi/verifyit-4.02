@@ -1,0 +1,147 @@
+{{ layout "default.vto" }}
+	<div class="text-center" style="margin-top:20px;margin-bottom:20px;">
+		<img src="/assets/logo.png" alt="logo" style="height: 5rem;">
+		<div style="color: #2E6099; font-size: xx-large;display: inline;font-weight: bold;">VerifyIt!</div>		
+	</div>
+    <style>
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+    </style>
+
+    <div class="container">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Information Form</h3>
+            </div>
+            <div class="card-body">
+                <form id="infoForm" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="nameHandle" class="form-label">Your name or handle *</label>
+                        <input type="text" class="form-control" id="nameHandle" required>
+                        <div class="invalid-feedback">Please provide your name or handle.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sources" class="form-label">Sources</label>
+                        <input type="text" class="form-control" id="sources">
+                    </div>
+                    <div class="mb-3">
+                        <label for="channels" class="form-label">Channels</label>
+                        <input type="text" class="form-control" id="channels">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Connect</button>
+                </form>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-success" onclick="sendMessage()">Send Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Send Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="messageForm">
+                        <div class="mb-3">
+                            <label for="channelInput" class="form-label">Channel</label>
+                            <input type="text" class="form-control" id="channelInput" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="messageInput" class="form-label">Message</label>
+                            <textarea class="form-control" id="messageInput" rows="3" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="sendMessageBtn">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let websocket = null
+        // Form submission handler
+        document.getElementById('infoForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const form = event.currentTarget;
+            if (!form.checkValidity()) {
+                event.stopPropagation();
+                form.classList.add('was-validated');
+                return;
+            }
+            
+            // Get form values
+            const nameHandle = document.getElementById('nameHandle').value;
+            const sources = document.getElementById('sources').value || '<none>';
+            const channels = document.getElementById('channels').value || '<none>';
+						
+						const wsUri = `${location.protocol == 'http:' ? 'ws' : 'wss'}://${location.host}?username=${nameHandle}&sources=${sources}&channels=${channels}`
+						websocket = new WebSocket(wsUri)
+
+						websocket.onopen = (e) => {
+							console.log('Websocket connected.')
+						}
+						websocket.onclose = (e) => {
+							console.log("DISCONNECTED");
+						}
+						websocket.onmessage = (e) => {
+							console.log(`RECEIVED: ${e.data}`);
+						}
+						websocket.onerror = (e) => {
+							console.error(`ERROR: ${e.data}`);
+						}
+        })
+
+        // Initialize modal
+        function sendMessage() {
+            const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+            messageModal.show();
+        }
+
+        // Message form submission
+        document.getElementById('sendMessageBtn').addEventListener('click', function() {
+            const channelInput = document.getElementById('channelInput');
+            const messageInput = document.getElementById('messageInput');
+            
+            // Basic validation
+            if (!channelInput.value || !messageInput.value) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Create message data
+            const messageData = {
+                channel: channelInput.value,
+								data: {
+                	message: messageInput.value,
+									asof: (new Date()).toLocaleString()
+								}
+            };
+	            
+            // Send via websocket
+            websocket.send(JSON.stringify(messageData));
+						console.log('Sent test message: ', messageData)
+            
+            // Close the modal
+            const messageModal = bootstrap.Modal.getInstance(document.getElementById('messageModal'));
+            messageModal.hide();
+            
+            // Reset form
+            document.getElementById('messageForm').reset();
+        })
+    </script>
+
+{{ /layout }}

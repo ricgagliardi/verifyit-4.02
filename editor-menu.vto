@@ -1,0 +1,70 @@
+{{ function titleCase(str) }}
+	{{ str.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' ').split(' ').map( w => w.replace(w[0], w[0].toUpperCase()) ).join(' ') }}
+{{ /function }}
+{{ set auth = atob(params.auth).split('::') }}
+{{ set full_name = auth[0] }}
+{{ set passcode = auth[1]}}
+{{ set is_valid_passcode = db.prepare(`
+	select count(*) as is_valid 
+	from passcode 
+	where passcode_name = ? 
+	and expires > date('now', 'localtime')`).get(passcode).is_valid
+}}
+{{ set user = db.prepare(`
+	select author_name, author_is_editor, author_is_manager
+	from author
+	where author_name = ?
+	and author_is_active`).get(full_name)
+}}
+{{ set schema = {
+		question: user => true,
+		source: user => true,
+		author: user => user.author_is_manager,
+		topic: user => user.author_is_manager,
+		status: user => user.author_is_manager,
+	}
+}}
+{{> console.log('menu schema', schema) }}
+{{ set menu_items = Object.keys(schema).filter( n => schema[n](user) ) }}
+{{> console.log('  menu items', menu_items)}}
+
+{{ layout "/default.vto" }} 
+<main hx-target="main" hx-select="main" hx-swap="outerHTML">
+	<div class="position-relative p-5 text-center">
+		<div style="text-align:right; font-size:small">{{ full_name }}</div>
+		<h1 class="inter pb-4 md-align-l">Main Menu</h1>
+		{{ for item of menu_items }}
+			<div class="d-grid gap-2 col-lg-6 mx-auto">
+				<button style="background-color: darkseagreen"
+						hx-get="/editor-list" 
+						hx-vals='{ "list": "{{ item }}", "auth": "{{ params.auth }}" }'
+						class="btn btn-lg align-middle mb-3">
+					<b class="fs-4"></b>
+					{{ titleCase(item) }}
+				</button>
+			</div>
+		{{ /for }}
+			<div class="d-grid gap-2 col-lg-6 mx-auto">
+				<button style="background-color: darkseagreen"
+						onclick="signOut()"
+						class="btn btn-lg align-middle mb-3">
+					<b class="fs-4"></b>
+					Sign out
+				</button>
+			</div>
+	</div>
+	{{# <pre>
+		name: {{ full_name }}
+		is_valid_passcode: {{ is_valid_passcode }}
+		is_editor: {{ user.author_is_editor }}
+		is_manager: {{ user.author_is_manager }}
+		menu_items: {{ JSON.stringify(menu_items, null, 2) }}
+	</pre> #}}
+	<script>
+		function signOut() {
+			delete sessionStorage.auth
+			location.reload()
+		}
+	</script>
+</main>
+{{ /layout }}

@@ -1,0 +1,17 @@
+{{ layout "default.vto" }}
+<main hx-target="main" hx-select="main" hx-swap="outerHTML">
+	<div class="text-center" style="margin-top:20px;margin-bottom:20px;">
+		<img src="/assets/logo.png" alt="logo" style="height: 5rem;">
+		<div style="color: #2E6099; font-size: xx-large;display: inline;font-weight: bold;">VerifyIt!</div>		
+	</div>
+	<div class="position-relative p-5 text-center">
+		<h1 class="inter pb-4 md-align-l">The Premier <b>Civics, Voting, News Literacy Game</b></h1>
+		<div class="d-grid gap-2 col-lg-6 mx-auto">
+			<a hx-get="/choose-game-mode"  class="btn btn-lg lime-btn align-middle" type="button">
+				<b class="fs-4">Play Now</b> <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+			</a>
+		</div>
+		<span>Version {{ config.version }}</span>
+	</div>
+</main>
+{{ /layout }}

@@ -1,0 +1,89 @@
+<main hx-target="main" hx-select="main" hx-swap="outerHTML">
+  <div class="position-relative p-5 text-center">
+    <h1 class="inter pb-4 md-align-l">Enter room name</h1>
+    <input id="room-name" type="text" class="form-control" placeholder="Room name" style="border-radius: 1.5rem; padding: 1rem; border: 1px solid #000; width: 50%; margin: auto;">
+    {{ if params.role === 'host' }}
+      <p style="margin-top: 1rem;">Share this code with your students for them to join the game.</p>
+    {{ else if params.role === 'player' }}
+      <p style="margin-top: 1rem;">Enter the room name shared by the host to join the game room.</p>
+    {{ /if }}
+    <div class="d-grid gap-2 col-lg-6 mx-auto" style="margin-top: 2rem;">
+      <button id="continue-btn" 
+              class="btn btn-lg grey-btn align-middle mb-3 thin-btn" 
+              style="padding: 0.5rem 1rem; pointer-events: none; opacity: 0.5;" 
+              type="button"
+              onclick="handleContinueClick(event)">
+        <b class="fs-5">Continue</b>
+        <span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function hashRoomName(roomName) {
+      let hash = 0;
+      for (let i = 0; i < roomName.length; i++) {
+        hash = Math.imul(31, hash) + roomName.charCodeAt(i) | 0;
+      }
+      return Math.abs(hash) % (10 ** 9) + 1;
+    }
+
+    function hashPlayerId(gameId, firstName, lastName) {
+      const string = `${gameId}${firstName}${lastName}`;
+      return hashRoomName(string);
+    }
+
+    function checkInput() {
+      const input = document.getElementById('room-name');
+      const button = document.getElementById('continue-btn');
+      if (input.value.trim() !== '') {
+        button.style.pointerEvents = 'auto';
+        button.style.opacity = 1;
+      } else {
+        button.style.pointerEvents = 'none';
+        button.style.opacity = 0.5;
+      }
+    }
+
+    document.getElementById('room-name').addEventListener('input', checkInput);
+
+    function handleContinueClick(event) {
+        const roomName = document.getElementById("room-name").value;
+        const gameId = hashRoomName(roomName);
+        console.log(gameId);
+        const role = "{{ params.role }}";
+        let url = '';
+        if (role === 'host') {
+            url = '/choose-game-topic';
+
+            htmx.ajax('GET', url, {
+                values: {
+                room_name: roomName,
+                mode: "multi-player",
+                role: role,
+                game_id: gameId,
+                },
+                target: 'main',
+                swap: 'outerHTML'
+            });
+        } else if (role === 'player') {
+            const playerId = hashPlayerId(gameId, "{{ params.first_name }}", "{{ params.last_name }}");
+            url = 'player-waiting-room';
+
+            htmx.ajax('GET', url, {
+                values: {
+                room_name: roomName,
+                mode: "multi-player",
+                first_name: "{{ params.first_name }}",
+                last_name: "{{ params.last_name }}",
+                role: role,
+                game_id: gameId,
+                player_id: playerId
+                },
+                target: 'main',
+                swap: 'outerHTML'
+            });
+        }
+    }
+  </script>
+</main>

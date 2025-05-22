@@ -1,0 +1,50 @@
+{{ function titleCase(str) }}
+	{{ str.toLowerCase().split(' ').map( w => w.replace(w[0], w[0].toUpperCase()) ).join(' ') }}
+{{ /function }}
+
+{{ set data = db.prepare(`
+				select topic_name, topic_color
+				from topic 
+				where status_name = 'Production' 
+				order by topic_sequence;
+			`).all()
+}}
+{{# {{> console.log('data', data) }} #}}
+	<main hx-target="main" hx-select="main" hx-swap="outerHTML">
+		<div class="subnav">
+			<div class="container-fluid" style="display: flex; align-items: center;">
+				<span 
+					class="material-symbols-outlined btn-back" 
+					style="cursor: pointer;"
+					onclick="window.history.back()"
+				>arrow_back_ios
+				</span>
+				<h4 class="margin-auto">
+					{{ titleCase(params.mode.replaceAll('-', ' ')) }}
+				</h4>
+			</div>
+		</div>
+		<div class="position-relative p-5 text-center">
+			<h1 class="inter pb-4 md-align-l">Choose a game topic</h1>
+			{{ for topic of data }}
+				<div class="d-grid gap-2 col-lg-6 mx-auto">
+					<a style="background-color: #{{ topic.topic_color }}"
+							hx-get="/choose-game-difficulty" 
+							hx-vals='{
+								"topic_name": "{{ topic.topic_name }}",
+								"topic_color": "{{ topic.topic_color }}",
+								"mode": "{{ params.mode }}",
+								"role": "{{ params.role }}",
+								"room_name": "{{ params.room_name }}",
+								"game_id": "{{ params.game_id }}"
+							}'
+							class="btn btn-lg align-middle mb-3">
+						<b class="fs-4"></b>
+						{{ topic.topic_name }}
+						<span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios
+						</span>
+					</a>
+				</div>
+			{{ /for }}
+		</div>
+	</main>

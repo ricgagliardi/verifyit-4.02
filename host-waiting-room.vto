@@ -1,0 +1,172 @@
+{{ layout "default.vto" }}
+{{set currentTime = (new Date()).toISOString()
+}}
+{{ set qs = db.prepare(`
+    select json_group_array(qid) as q_list from (
+      select question_id as qid
+      from topic_question natural join question
+      where topic_name = ?
+      and lower(difficulty) = ?
+      order by random()
+      limit 10
+    )`).get(params.topic_name, params.difficulty)
+}}
+{{
+  set gameInsertResult = db.prepare(`
+        INSERT INTO game (game_id, game_mode, topic_name, room_name, location, difficulty, topic_color, start_time, end_time, questions)
+        VALUES (?, ?, ?, ?, NULL, ?, ?, ?, NULL, ?)`)
+        .run(params.game_id, params.mode, params.topic_name, params.room_name, params.difficulty, params.topic_color, currentTime, qs.q_list)
+}}
+
+<main hx-target="main" hx-select="main" hx-swap="outerHTML">
+  <style>
+    body { background-color: #{{ params.topic_color }} }
+
+    #players-table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    #players-table th, #players-table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+
+    #players-table th {
+      background-color: #f0f0f0;
+    }
+
+    #start-game-btn, #end-game-btn {
+      margin: 0 auto;
+      display: block;
+    }
+  </style>
+  <div class="subnav">
+    <div class="container-fluid" style="display: flex; align-items: center;">
+      <span
+        class="material-symbols-outlined btn-back"
+        style="cursor: pointer;"
+        onclick="window.history.back()"
+      >arrow_back_ios
+      </span>
+      <h4 class="margin-auto">Room: {{ params.room_name }}</h4>
+    </div>
+  </div>
+  <div class="position-relative p-5 text-center md-align-l">
+    <h1 class="inter pb-4 md-align-l" id="game-status">Waiting for players</h1>
+    <p id="players-joined-text">Share the room code below to participating players so they can join.</p>
+
+    <div class="d-grid gap-2 col-lg-6 mx-auto" >
+      <div class="grey-btn align-middle mb-3 p-3">
+        <b class="fs-4">ROOM NAME</b>
+        <p>{{ params.room_name }}</p>
+        <p>Please share <a href="https://test.playverifyit.org">test.playverifyit.org</a> and enter the room name above</p>
+        <button class="btn btn-sm grey-btn align-middle mb-3" onclick="copyToClipboard('{{ params.room_name }}')">Copy game code</button>
+        <button class="btn btn-sm grey-btn align-middle mb-3" onclick="shareLink()">Copy link</button>
+      </div>
+    </div>
+    <div class="d-grid gap-2 col-lg-6 mx-auto" >
+      <p id="players-count">0 players joined</p>
+      <table id="players-table" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Player Name</th>
+            <th id="score-header" style="display: none;">Score</th>
+          </tr>
+        </thead>
+        <tbody id="players-tbody">
+        </tbody>
+      </table>
+    </div>
+    <button class="btn btn-lg grey-btn align-middle mb-3" id="start-game-btn" disabled>Start game</button>
+    <button class="btn btn-lg grey-btn align-middle mb-3" id="end-game-btn" style="display: none;">End game</button>
+  </div>
+
+  <script>
+    const username = 'host';
+    const channels = '{{ params.room_name }}';
+    const sources = 'host';
+    const wsUri = `${location.protocol == 'http:' ? 'ws' : 'wss'}://${location.host}?username=${username}&channels=${channels}&sources=${sources}`;
+    const socket = new WebSocket(wsUri);
+
+    socket.onopen = () => {
+      console.log('WebSocket connection established');
+    };
+
+    socket.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+
+    function startGame() {
+      socket.send(JSON.stringify({ message: 'Start', questions: {{ JSON.stringify(qs.q_list) }} }));
+      document.getElementById('score-header').style.display = 'table-cell';
+      const scoreCells = document.querySelectorAll('#players-table tbody tr td:nth-child(2)');
+      scoreCells.forEach(cell => cell.style.display = 'table-cell');
+      document.getElementById('start-game-btn').style.display = 'none';
+      document.getElementById('end-game-btn').style.display = 'block';
+      document.getElementById('game-status').textContent = 'Game in progress';
+      document.getElementById('players-count').textContent = 'Current standings';
+    }
+
+    let gameStarted = false;
+
+    document.getElementById('start-game-btn').addEventListener('click', () => {
+      startGame();
+      gameStarted = true;
+    });
+
+    document.getElementById('end-game-btn').addEventListener('click', () => {
+      socket.send(JSON.stringify({ message: 'End' }));
+    });
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log('Received message:', event.data);
+      if (data.message.includes(' ')) {
+        const playerName = data.message;
+        const tableBody = document.getElementById('players-tbody');
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.textContent = playerName;
+        row.appendChild(cell);
+        const scoreCell = document.createElement('td');
+        scoreCell.style.display = gameStarted ? 'table-cell' : 'none';
+        scoreCell.textContent = '0';
+        row.appendChild(scoreCell);
+        tableBody.appendChild(row);
+        document.getElementById('players-count').textContent = `${tableBody.children.length} players joined`;
+        if (gameStarted) {
+          startGame();
+        } else {
+          document.getElementById('start-game-btn').disabled = false;
+        }
+      } else {
+        const tableBody = document.getElementById('players-tbody');
+        const rows = tableBody.children;
+        for (let i = 0; i < rows.length; i++) {
+          if (rows[i].children[0].textContent === data.source) {
+            rows[i].children[1].textContent = data.message;
+          }
+        }
+        const sortedRows = Array.from(rows).sort((a, b) => parseInt(b.children[1].textContent) - parseInt(a.children[1].textContent));
+        tableBody.innerHTML = '';
+        sortedRows.forEach(row => tableBody.appendChild(row));
+      }
+    };
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        console.log('Copied to clipboard');
+      });
+    }
+
+    function shareLink() {
+      const link = `https://test.playverifyit.org`;
+      navigator.clipboard.writeText(link).then(() => {
+        console.log('Shared link');
+      });
+    }
+  </script>
+</main>
+{{ /layout }}

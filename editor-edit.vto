@@ -1,0 +1,312 @@
+{{ function titleCase(str) }}
+	{{ str.toLowerCase().replaceAll('_', ' ').replaceAll('-', ' ').trim().split(' ').map( w => w.replace(w[0], w[0].toUpperCase()) ).join(' ') }}
+{{ /function }}
+{{ set auth = atob(params.auth).split('::') }}
+{{ set full_name = auth[0] }}
+{{ set passcode = auth[1]}}
+{{ set is_valid_passcode = db.prepare(`
+	select count(*) as is_valid 
+	from passcode 
+	where passcode_name = ? 
+	and expires > date('now', 'localtime')`).get(passcode).is_valid
+}}
+{{ set user = db.prepare(`
+	select author_id, author_name, author_is_editor, author_is_manager
+	from author
+	where author_name = ?
+	and author_is_active`).get(full_name)
+}}
+{{# {{> console.log('user', user) }} #}}
+{{ set schema = {
+		source: {
+			select: { 
+				name: {class: 'col-md-6'}, 
+				description: {class: 'col-md-12', trix: true},
+			},
+			from: 'source',
+			where: `source_id = ${params.key}`,
+			perms: {
+				write: !!user.author_is_manager,
+			},
+		},
+		question: {
+			select: {
+				title: {class: 'col-md-5', label: 'Title'},
+				_topics: {class: 'col-md-2', sql: "group_concat(topic_name, ', ') as _topics", label: 'Topics', readonly: true},
+				us_state: {class: 'col-md-1', label: 'State'},
+				date_created: {class: 'col-md-2', label: 'Created', type: 'date', default: new Date().toLocaleDateString('en-CA')},
+				difficulty: {class: 'col-md-2', options: 'Easy, Medium, Hard, Any'},
+				content: {class: 'col-md-12', trix: true},
+				choices: {class: 'col-md-12', trix: true},
+				followup: {class: 'col-md-12', trix: true},
+				hints: {class: 'col-md-12', trix: true},
+				private_comments: {class: 'col-md-12', trix: true},
+				correct_choice: {class: 'col-md-2'},
+				author_id: {hidden: true, default: user.author_id},
+				_author_name: {
+					class: 'col-md-3', 
+					sql: 'author_name as _author_name', 
+					label: 'Author', 
+					readonly: true, 
+					default: user.author_name
+				},
+				status_name: {class: 'col-md-2', default: 'Proposed'},
+				_asof: {class: 'col-md-3', type: 'date', label: 'Updated', default: new Date().toLocaleDateString('en-CA')},
+				_by: {class: 'col-md-2', hidden: true, default: user.author_id},
+			},
+			from: 'question natural join topic_question natural join author',
+			where: `question_id = ${params.key}`,
+			perms: {
+				write: !!user.author_is_editor
+			},
+		},
+		author: {
+			select: { 
+				author_name: {class: 'col-md-12'}, 
+				author_is_editor: {class: 'col-md-4', type: 'number', attrs: 'min="0" max="1"', label: 'Editor?'},
+				author_is_manager: {class: 'col-md-4', type: 'number', attrs: 'min="0" max="1"', label: 'Manager?'},
+				author_is_active: {class: 'col-md-4', type: 'number', attrs: 'min="0" max="1"', label: 'Active?'},
+			},
+			from: 'author',
+			where: `author_id = ${params.key}`,
+			perms: {
+				write: !!user.author_is_manager,
+			},
+		},
+		status: {
+			select: { 
+				status_name: {class: 'col-md-6'}, 
+			},
+			from: 'status',
+			where: `status_name = ${params.key}`,
+			perms: {
+				write: !!user.author_is_manager,
+			},
+		},
+		topic: {
+			select: { 
+				topic_name: {class: 'col-md-6', label: 'Topic'},
+				topic_color: {class: 'col-md-6', label: 'Color'},
+				topic_sequence: {class: 'col-md-4', label: 'Sequence'},
+				status_name: {class: 'col-md-8', label: 'Status'}, 
+			},
+			from: 'topic',
+			where: `topic_name = ${params.key}`,
+			perms: {
+				write: !!user.author_is_manager,
+			},
+		},
+
+
+		topic_question: {
+			fields: {
+				topic_name: {class: 'col-md-6'},
+				question_id: {class: 'col-md-6'},
+			},
+			perms: {
+				write: !!user.author_is_manager
+			},
+		},
+	}
+}}
+
+{{ set spec = schema[params.fm] }}
+{{> console.log('spec', spec) }}
+{{ if params.key == 'new' }}
+	{{ set data = Object.fromEntries(Object.keys(spec.select).map(k => [k, spec.select[k].default || ''])) }}
+{{ else }}
+	{{ set sql = `
+		select ${Object.keys(spec.select).map( k => spec.select[k].sql || k).join(', ')}
+		from ${spec.from}
+		${spec.where ? 'where ' + spec.where : ''}
+		${spec.group ? 'group by ' + spec.group : ''}`
+
+	}}
+
+	{{> console.log('sql', sql) }}
+	{{ set data = db.prepare(sql).get() }}
+{{ /if }}
+{{> console.log('data', data) }}
+
+{{ if (params.fm == 'question') }}
+	{{# {{> console.log('question perms', spec.perms.write, data.author_id, user.author_id) }} #}}
+	{{ spec.perms.write = spec.perms.write || data.author_id == user.author_id }}
+{{ /if }}
+
+{{ layout "/default.vto" }} 
+<main>
+	  <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.8/dist/trix.css">
+  	<script type="text/javascript" src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        dialog {
+            padding: 0;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 650px;
+        }
+        
+        dialog::backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .dialog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        
+        .dialog-header h5 {
+            margin: 0;
+            font-weight: 600;
+            color: #212529;
+        }
+        
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            line-height: 1;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 0;
+            transition: color 0.15s ease-in-out;
+        }
+        
+        .close-button:hover {
+            color: #212529;
+        }
+        
+        .dialog-body {
+            padding: 20px;
+        }
+        
+        .dialog-footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+        
+        .dialog-footer .actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #495057;
+        }
+        
+        .form-control {
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+        }
+        
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        
+        .btn:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+				</style>
+        <div>
+            <div class="dialog-header">
+                <h5>Edit {{ titleCase(params.fm) }}</h5>
+                <button class="close-button" aria-label="Close" id="closeButton" 
+								        onclick="document.getElementById('edit-form').close()">&times;</button>
+            </div>
+            
+            <div class="dialog-body">
+                <form id="actual-form" hx-post="/editor-save-data?table={{ params.fm }}&key={{ params.key }}&where={{ spec.where }}" hx-target="#result" hx-swap="innerHTML" hx-select="main">
+                    <div class="row">
+											{{ for n of Object.keys(data) }}
+												{{> console.log('field', n, data[n]) }}
+                        <div class="{{ spec.select[n].class || '' }}" {{ spec.select[n].hidden ? 'hidden' : '' }}>
+                            <div class="form-group">
+                                <label for="{{ n }}" class="form-label">{{ spec.select[n].label || titleCase(n) }}</label>
+                                <input type="{{ spec.select[n].type || 'text' }}" 
+																		id="{{ n }}" name="{{ n }}" 
+																		class="form-control"
+																		{{ spec.select[n].trix ? 'hidden' : '' }}
+																		{{ spec.select[n].options ? 'list="{{ n }} -datalist"' : '' }}
+																		{{ spec.select[n].readonly ? 'readonly' : '' }}
+																		{{ spec.select[n].attrs || '' }}
+																		value="{{ data[n] |> escape }}"
+																	>
+															{{ spec.select[n].trix ? `<trix-editor input="${n}"></trix-editor>` : '' }}
+															{{ if spec.select[n].options }}
+																<datalist id="{{ n }}-datalist">
+																{{ for i of spec.select[n].options.split(/,\s*/) }}
+																	<option value="{{ i }}">
+																{{ /for }}
+																</datalist>
+															{{ /if }}
+                            </div>
+                        </div>
+											{{ /for }}
+                    </div>
+                </form>
+            </div>
+            
+            <div class="dialog-footer">
+                <button class="btn btn-danger" id="deleteButton" onclick="alert('Not implemented yet.')">Delete</button>
+                <div class="actions">
+                    <button class="btn btn-secondary" id="cancelButton" onclick="document.getElementById('edit-form').close()">Cancel</button>
+                    <input class="btn btn-primary" id="saveButton" type="submit" form="actual-form" value="Save Changes">
+                </div>
+            </div>
+								<div id="result" class="text-end"></div>
+        </div>
+		<script>
+			console.log('perms', {{ spec.perms.write }})
+			if ({{ !spec.perms.write }}) {
+				htmx.find('#saveButton').setAttribute('disabled', 'disabled')
+				htmx.find('#saveButton').setAttribute('value', 'No Save Allowed')
+			}
+		</script>
+
+</main>
+{{ /layout }}

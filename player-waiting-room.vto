@@ -1,0 +1,48 @@
+{{console.log(params.game_id)}}
+{{ set gameInsertResult = db.prepare(`
+        INSERT INTO player (player_id, game_id, player_name, current_question, scores)
+        VALUES (?, ?, ?, 1, 0)
+    `).run(params.player_id, params.game_id, 
+                    params.first_name + " " + params.last_name)		
+}}
+
+<main hx-target="main" hx-select="main" hx-swap="outerHTML">
+  <div class="position-relative p-5 text-center">
+    <h1 class="inter pb-4 md-align-l">Waiting for the host to start the game</h1>
+  </div>
+
+  <script>
+    const username = '{{ params.first_name }} {{ params.last_name }}';
+    const channels = '{{ params.room_name }}';
+    const sources = 'player';
+
+    const wsUri = `${location.protocol == 'http:' ? 'ws' : 'wss'}://${location.host}?username=${username}&channels=${channels}&sources=${sources}`;
+    const socket = new WebSocket(wsUri);
+
+    socket.onmessage  =  (event) => {
+      console.log('Received');
+      const data = JSON.parse(event.data);
+      console.log(data);
+      if (data.message === "Start" && data.source === "host") {
+        const questions = data.questions.substring(1, data.questions.length - 1).split(',').map(Number);
+        const url = `/multiplayer-display-question?room_name={{params.room_name}}&mode={{params.mode}}&first_name={{params.first_name}}&last_name={{params.last_name}}&role={{params.role}}&game_id={{params.game_id}}&player_id={{params.player_id}}&questions=${JSON.stringify(questions)}&score=0`;
+        window.location.href = url;
+      }
+    };
+
+    socket.onopen = () => {
+      console.log('WebSocket connection established');
+      socket.send(JSON.stringify({ message: `{{params.first_name}} {{params.last_name}}` }));
+      console.log('{{params.first_name}}');
+      console.log('{{params.last_name}}');
+    };
+
+    socket.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+  </script>
+</main>

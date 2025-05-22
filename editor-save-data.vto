@@ -1,0 +1,33 @@
+{{> console.log('hello from save_data. params', params) }}
+{{ if params.key == 'new' }}
+	{{ set statement = `
+		insert into "${params.table}"
+		(${Object.keys(params._body).filter( k => !k.startsWith('_') ).join(', ')})
+		values (${Object.keys(params._body).filter( k => !k.startsWith('_') ).map( k => '?').join(', ')})
+	`}}
+{{ else }}
+	{{ set statement = `
+		update "${params.table}"
+		set (${Object.keys(params._body).filter( k => !k.startsWith('_') ).join(', ')})
+		= (${Object.keys(params._body).filter( k => !k.startsWith('_') ).map( k => '?').join(', ')})
+		where ${params.where}
+	`}}
+{{ /if }}
+{{> console.log('statement', statement, 'values', Object.keys(params._body).filter( k => !k.startsWith('_') ).map( k => params._body[k] )) }}
+
+{{ set result = db.prepare(statement).run(...Object.keys(params._body).filter( k => !k.startsWith('_') ).map( k => params._body[k] )) }}
+{{> console.log('save result', result) }}
+{{ layout "default.vto" }} 
+<main>
+	{{ if result.changes && result.changes > 0 }}
+		<h4 class="text-success">Saved!</h4>
+	{{ else }}
+		<h1 class="text-danger">Save FAILED</h1>
+	{{ /if }}
+</main>
+	<pre>
+		params: {{ JSON.stringify(params, null, 2) }}
+		statement: {{ statement }}
+		result: {{ JSON.stringify(result) }}
+	</pre>
+{{ /layout }}
