@@ -8,7 +8,7 @@
       where topic_name = ?
       and lower(difficulty) = ?
       order by random()
-      limit 10
+      limit 11
     )`).get(params.topic_name, params.difficulty)
 }}
 {{
@@ -34,7 +34,7 @@
     }
 
     #players-table th {
-      background-color: #f0f0f0;
+      background-color:rgb(240, 240, 240);
     }
 
     #start-game-btn, #end-game-btn {
@@ -53,34 +53,57 @@
       <h4 class="margin-auto">Room: {{ params.room_name }}</h4>
     </div>
   </div>
+
   <div class="position-relative p-5 text-center md-align-l">
+
+    <style>
+      .loading-symbol {
+        font-size: 20px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+
+    <div style="background-color: #F7DC6F; border: 1px solid #000; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; margin: 0 auto;" id="loading-symbol-container">
+      <span style="font-size: 20px;" class="material-symbols-outlined loading-symbol">autorenew</span>
+    </div>
     <h1 class="inter pb-4 md-align-l" id="game-status">Waiting for players</h1>
     <p id="players-joined-text">Share the room code below to participating players so they can join.</p>
 
     <div class="d-grid gap-2 col-lg-6 mx-auto" >
-      <div class="grey-btn align-middle mb-3 p-3">
-        <b class="fs-4">ROOM NAME</b>
+      <div style="background-color: #f7f7f7; border: 2px solid #F7DC6F; padding: 10px; width: 100%">
+        <b>ROOM NAME</b>
         <p>{{ params.room_name }}</p>
-        <p>Please share <a href="https://test.playverifyit.org">test.playverifyit.org</a> and enter the room name above</p>
-        <button class="btn btn-sm grey-btn align-middle mb-3" onclick="copyToClipboard('{{ params.room_name }}')">Copy game code</button>
-        <button class="btn btn-sm grey-btn align-middle mb-3" onclick="shareLink()">Copy link</button>
+        <p style="font-size: 14px; color: #666;">Please share <a href="https://test.playverifyit.org/">https://test.playverifyit.org/</a> and enter the room name above.</p>
+        <button style="background-color: #fff; border: 1px solid #000; padding: 5px 10px;" onclick="copyToClipboard('{{ params.room_name }}')">Copy name</button>
+        <button style="background-color: #fff; border: 1px solid #000; padding: 5px 10px;" onclick="shareLink()">Copy link</button>
       </div>
     </div>
     <div class="d-grid gap-2 col-lg-6 mx-auto" >
       <p id="players-count">0 players joined</p>
+      <p id="current-standings-header" style="display: none;">Current Standings</p>
       <table id="players-table" class="table table-striped">
         <thead>
           <tr>
             <th>Player Name</th>
             <th id="score-header" style="display: none;">Score</th>
+            <th id="current-question-header" style="display: none;">Current Question</th>
           </tr>
         </thead>
         <tbody id="players-tbody">
         </tbody>
       </table>
     </div>
-    <button class="btn btn-lg grey-btn align-middle mb-3" id="start-game-btn" disabled>Start game</button>
-    <button class="btn btn-lg grey-btn align-middle mb-3" id="end-game-btn" style="display: none;">End game</button>
+    <button class="vi-btn btn-lg grey-btn align-middle mb-3" id="start-game-btn" disabled>Start game</button>
+    <button class="vi-btn btn-lg grey-btn align-middle mb-3" id="end-game-btn" style="display: none;">End game</button>
   </div>
 
   <script>
@@ -101,12 +124,17 @@
     function startGame() {
       socket.send(JSON.stringify({ message: 'Start', questions: {{ JSON.stringify(qs.q_list) }} }));
       document.getElementById('score-header').style.display = 'table-cell';
+      document.getElementById('current-question-header').style.display = 'table-cell';
       const scoreCells = document.querySelectorAll('#players-table tbody tr td:nth-child(2)');
       scoreCells.forEach(cell => cell.style.display = 'table-cell');
+      const currentQuestionCells = document.querySelectorAll('#players-table tbody tr td:nth-child(3)');
+      currentQuestionCells.forEach(cell => cell.style.display = 'table-cell');
       document.getElementById('start-game-btn').style.display = 'none';
       document.getElementById('end-game-btn').style.display = 'block';
       document.getElementById('game-status').textContent = 'Game in progress';
-      document.getElementById('players-count').textContent = 'Current standings';
+      document.getElementById('current-standings-header').style.display = 'block';
+      const loadingSymbolContainer = document.getElementById('loading-symbol-container');
+      loadingSymbolContainer.innerHTML = '<span style="font-size: 20px;" class="material-symbols-outlined loading-symbol">autorenew</span>';
     }
 
     let gameStarted = false;
@@ -118,6 +146,9 @@
 
     document.getElementById('end-game-btn').addEventListener('click', () => {
       socket.send(JSON.stringify({ message: 'End' }));
+      socket.close();
+      const loadingSymbolContainer = document.getElementById('loading-symbol-container');
+      loadingSymbolContainer.innerHTML = '<div style="background-color: #34C759; border: 1px solid #000; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center;"><span style="font-size: 20px; color: #000;" class="material-symbols-outlined">check</span></div>';
     });
 
     socket.onmessage = (event) => {
@@ -134,8 +165,19 @@
         scoreCell.style.display = gameStarted ? 'table-cell' : 'none';
         scoreCell.textContent = '0';
         row.appendChild(scoreCell);
+        const currentQuestionCell = document.createElement('td');
+        currentQuestionCell.style.display = gameStarted ? 'table-cell' : 'none';
+        currentQuestionCell.textContent = '1';
+        row.appendChild(currentQuestionCell);
         tableBody.appendChild(row);
-        document.getElementById('players-count').textContent = `${tableBody.children.length} players joined`;
+        document.getElementById('players-count').textContent = `${tableBody.children.length} player${tableBody.children.length === 1 ? '' : 's'} joined`;
+        
+        if (tableBody.children.length >= 1) {
+          document.getElementById('game-status').textContent = 'Game room is ready';
+          const loadingSymbolContainer = document.getElementById('loading-symbol-container');
+          loadingSymbolContainer.innerHTML = '<div style="background-color: #34C759; border: 1px solid #000; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center;"><span style="font-size: 20px; color: #000;" class="material-symbols-outlined">check</span></div>';
+        }
+
         if (gameStarted) {
           startGame();
         } else {
@@ -147,9 +189,23 @@
         for (let i = 0; i < rows.length; i++) {
           if (rows[i].children[0].textContent === data.source) {
             rows[i].children[1].textContent = data.message;
+            const currentQuestion = parseInt(rows[i].children[2].textContent);
+            if (currentQuestion < 10) {
+              rows[i].children[2].textContent = currentQuestion + 1;
+            } else {
+              rows[i].children[2].textContent = 'Finished';
+            }
           }
         }
-        const sortedRows = Array.from(rows).sort((a, b) => parseInt(b.children[1].textContent) - parseInt(a.children[1].textContent));
+        const sortedRows = Array.from(rows).sort((a, b) => {
+          if (b.children[2].textContent === 'Finished' && a.children[2].textContent !== 'Finished') {
+            return 1;
+          } else if (a.children[2].textContent === 'Finished' && b.children[2].textContent !== 'Finished') {
+            return -1;
+          } else {
+            return parseInt(b.children[1].textContent) - parseInt(a.children[1].textContent);
+          }
+        });
         tableBody.innerHTML = '';
         sortedRows.forEach(row => tableBody.appendChild(row));
       }
@@ -162,7 +218,7 @@
     }
 
     function shareLink() {
-      const link = `https://test.playverifyit.org`;
+      const link = `https://test.playverifyit.org/`;
       navigator.clipboard.writeText(link).then(() => {
         console.log('Shared link');
       });

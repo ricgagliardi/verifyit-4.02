@@ -1,6 +1,6 @@
 {{ if params.next }}
 	{{ set buf = db.prepare('update player set current_question = current_question + 1 where player_id = ?')
-		  	.run(params.player_id)
+	  	.run(params.player_id)
 	}}
 {{ /if }}
 
@@ -9,32 +9,32 @@
 }}
 
 {{ set my_game = db.prepare(`
-		select 
-			player_name, 
-			current_question, 
-			scores, 
-			game_mode, 
-			topic_name, 
-			room_name, 
-			difficulty, 
-			topic_color,
-			questions
-		from player natural join game 
-		where player_id = ?
+	select 
+		player_name, 
+		current_question, 
+		scores, 
+		game_mode, 
+		topic_name, 
+		room_name, 
+		difficulty, 
+		topic_color,
+		questions
+	from player natural join game 
+	where player_id = ?
 	`)
 		.get(params.player_id)
 }}
 
 {{ set full_question = db.prepare(`
-		select title, content, choices, hints, correct_choice, followup
-		from question
-		where question_id = ?
+	select title, content, choices, hints, correct_choice, followup
+	from question
+	where question_id = ?
 	`)
 		.get(JSON.parse(my_game.questions)[my_game.current_question])
 }}
 {{ set question_choices = full_question.choices
-			.split(/<li[^>]*>([\s\S]*?)<\/li>/)
-			.filter( s => !s.startsWith('<') && s.length > 0) 
+	.split(/<li[^>]*>([\s\S]*?)<\/li>/)
+	.filter( s => !s.startsWith('<') && s.length > 0) 
 }}
 
 {{ set questionChoicesLength = question_choices | length }}
@@ -42,7 +42,7 @@
 {{ layout "default.vto" }}
 <main hx-target="main" hx-select="main" hx-swap="outerHTML">
 	<style>
-		dialog {
+		.dialog {
 			pointer-events: none;
 			opacity: 0;
 			transition: opacity 0.5s;
@@ -51,9 +51,21 @@
 			align-items: center;
 			justify-content: center;
 		}
-		dialog[open] {
+		.dialog[open] {
 			opacity: 1;
 			pointer-events: inherit;
+		}
+		.dialog .question-title {
+			color: green;
+			font-size: 28px;
+			font-weight: bold;
+		}
+		.dialog .question-content {
+			font-size: 20px;
+			margin-top: 10px;
+		}
+		.dialog button {
+			margin-top: 20px;
 		}
 	</style>
 	<div>
@@ -68,15 +80,15 @@
 			<br>
 			<div class="score-container my-4 d-flex align-items-center">
 				<h6 class="count me-3">
-					{{ my_game.current_question + 1 }} of 10
+					{{ my_game.current_question}} of 10
 				</h6>
 				<div class="progress-container w-75">
-					<div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
-						<div class="progress-bar" style="width: 10%;"></div>
+					<div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="{{ (my_game.current_question) / 10 * 100 }}" aria-valuemin="0" aria-valuemax="100">
+						<div class="progress-bar" style="width: {{ (my_game.current_question) / 10 * 100 }}%;"></div>
 					</div>
 				</div>
 			</div>
-			<div class="score align-middle"><span class="material-symbols-outlined">star</span>0</div>
+			<div class="score align-middle"><span class="material-symbols-outlined">star</span>{{ my_game.scores }}</div>
 			<br>
 			<div class="question-container text-center">
 				<h5 class="question-title" style="color: black; font-weight: bold; font-size: 30px">
@@ -86,21 +98,21 @@
 					{{ full_question.content }}
 				</div>
 			</div>
-			{{ set numChoices = 0 }}
-			{{ for idx, choice of question_choices }}
-				{{ set numChoices = numChoices + 1 }}
-				{{console.log(numChoices)}}
-				<button class="btn btn-lg mb-2 align-middle" type="button"
-								style="width:100%; background-color: #{{ my_game.topic_color}}"
-								onclick="checkIfCorrect(event)"  data-idx="{{ idx + 1 }}">
-					<span data-correct hidden class="material-symbols-outlined">check_circle</span>
-					<span data-incorrect hidden class="material-symbols-outlined">cancel</span>
-					<b class="fs-4">{{ choice }}</b> 
-					<span class="material-symbols-outlined  btn-arrow-icon">arrow_forward_ios</span>
-				</button>
-			{{ /for }}
-
-			<dialog id="followup">
+			<div class="choices-container">
+				{{ set numChoices = 0 }}
+				{{ for idx, choice of question_choices }}
+					{{ set numChoices = numChoices + 1 }}
+					<button class="vi-btn btn-lg mb-2 align-middle choice-btn"
+							style="width:100%; background-color: #{{ my_game.topic_color}}"
+							data-idx="{{ idx + 1 }}">
+						<span data-correct hidden class="material-symbols-outlined">check_circle</span>
+						<span data-incorrect hidden class="material-symbols-outlined">cancel</span>
+						<b class="fs-4">{{ choice }}</b> 
+						<span class="material-symbols-outlined  btn-arrow-icon">arrow_forward_ios</span>
+					</button>
+				{{ /for }}
+			</div>
+			<dialog id="followup" class="dialog">
 				<div class="position-relative p-5 text-center">
 					<div class="question-container text-center">
 						<h5 class="question-title">Correct!</h5>
@@ -108,84 +120,108 @@
 							{{ full_question.followup }}
 						</div>
 					</div>
-					{{ if my_game.current_question == 9 }}
-						<button hx-get="display-score" hx-vals='{"player_id": {{ params.player_id }}}'
-									  class="btn btn-lg mb-2 " style="width:80%" type="button">
-							<b class="fs-4">View Results</b>
-							<span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
-						</button>
-					{{ else }}
-						<button onclick="nextQuestion({{ params.player_id }})"
-								class="btn btn-lg mb-2 " style="width:80%" type="button">
-							<b class="fs-4">Next Question</b>
-							<span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
-						</button>
-					{{ /if }}
+					<button class="btn btn-lg mb-2 " style="width:80%" type="button">
+						<b class="fs-4">{{ my_game.current_question == 10 ? 'View Results' : 'Next Question' }}</b>
+						<span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
+					</button>
 				</div>
-	
 			</dialog>
 		</div>
 	</div>
 	<script>
-		{{ if my_game.current_question == 0 }}
-			let score = {{ params.score }};
+		(function() {
+			let score;
 			let num_attempts = 0;
-		{{ else }}
-			score = {{ my_game.scores }};
-			num_attempts = 0;
-		{{ /if }}
+			{{ if my_game.current_question == 0 }}
+				score = {{ params.score }};
+			{{ else }}
+				score = {{ my_game.scores }};
+			{{ /if }}
 
-		username = '{{ my_game.player_name }}';
-		channels = '{{ my_game.room_name }}';
-		sources = 'player';
+			document.querySelector('.score').innerHTML = `<span class="material-symbols-outlined">star</span>${score}`;
 
-                wsUri = `${location.protocol == 'http:' ? 'ws' : 'wss'}://${location.host}?username=${username}&channels=${channels}&sources=${sources}`;
-                socket = new WebSocket(wsUri);
+			let username = '{{ my_game.player_name }}';
+			let channels = '{{ my_game.room_name }}';
+			let sources = 'player';
 
-		socket.onopen = () => {
-			console.log('WebSocket connection established');
-		};
+			let wsUri = `${location.protocol == 'http:' ? 'ws' : 'wss'}://${location.host}?username=${username}&channels=${channels}&sources=${sources}`;
+			let socket = new WebSocket(wsUri);
 
-		delay = t => new Promise(resolve => setTimeout(resolve, t))
-		
-		async function checkIfCorrect(e) {
-			const target = e.target.nodeName == 'BUTTON' ? e.target : e.target.parentNode
-			const choiceNo = target.dataset.idx
-			console.log(choiceNo)
-			const isCorrect = choiceNo == "{{ full_question.correct_choice }}"
-			console.log('checkIfCorrect', target.nodeName, choiceNo, isCorrect)
-			num_attempts++;
+			socket.onopen = () => {
+				console.log('WebSocket connection established');
+			};
 
-			// target.classList.add('animate__animated', 'animate__pulse')
-				await delay(200);
-			target.classList.add(isCorrect ? 'correct-btn' : 'wrong-btn')
-			if (isCorrect) {
-				score += ({{ numChoices }} - num_attempts) * 100;
-				console.log({{ score }});
-				socket.send(JSON.stringify({ message: `${score}` }));
-				socket.close();
-				target.querySelector('[data-correct]').hidden = false
-				await delay(100)
-				document.querySelector('#followup').showModal()
+			socket.onmessage = (event) => {
+				const data = JSON.parse(event.data);
+				if (data.message === 'End') {
+					htmx.ajax('GET', 'results', {
+						source: document.body,
+						swap: 'outerHTML',
+						values: {
+							player_id: {{ params.player_id }},
+							score: score,
+							topic_color: '{{ my_game.topic_color }}'
+						}
+					});
+				} else {
+					console.log('Received message:', event.data);
+				}
+			};
+
+			let delay = t => new Promise(resolve => setTimeout(resolve, t))
+			async function checkIfCorrect(e) {
+				const target = e.currentTarget;
+				const choiceNo = target.dataset.idx;
+				const isCorrect = choiceNo == "{{ full_question.correct_choice }}";
+				num_attempts++;
+
+				target.classList.add(isCorrect ? 'correct-btn' : 'wrong-btn');
+
+				if (isCorrect) {
+					score += ({{ numChoices }} - num_attempts) * 100;
+					socket.send(JSON.stringify({ message: `${score}` }));
+					socket.close();
+					target.querySelector('[data-correct]').hidden = false;
+					await delay(100);
+					document.querySelector('#followup').showModal();
+				} else {
+					target.querySelector('[data-incorrect]').hidden = false;
+				}
+				document.querySelector('.score').innerHTML = `<span class="material-symbols-outlined">star</span>${score}`;
 			}
-			else {
-				target.querySelector('[data-incorrect]').hidden = false
-			}
-		}
 
-		function nextQuestion(player_id) {
-			console.log("Calling next question with player_id:", player_id, "and score:", score);
-			htmx.ajax('GET', 'multiplayer-display-question', {
-			source: document.body,
-			swap: 'outerHTML',
-			values: {
-				player_id: player_id,
-				next: true,
-				score: score
+			function nextQuestion(player_id) {
+				if ({{ my_game.current_question }} == 10) {
+					htmx.ajax('GET', 'results', {
+						source: document.body,
+						swap: 'outerHTML',
+						values: {
+							player_id: player_id,
+							score: score,
+							topic_color: '{{ my_game.topic_color }}'
+						}
+					});
+				} else {
+					htmx.ajax('GET', 'multiplayer-display-question', {
+						source: document.body,
+						swap: 'outerHTML',
+						values: {
+							player_id: player_id,
+							next: true,
+							score: score
+						}
+					});
+				}
 			}
+
+			document.querySelectorAll('.choice-btn').forEach(button => {
+				button.addEventListener('click', checkIfCorrect);
 			});
-		}
 
+			document.querySelector('#followup button').addEventListener('click', function() {
+				nextQuestion({{ params.player_id }});
+			});
+		})();
 	</script>
 </main>
 {{ /layout }}

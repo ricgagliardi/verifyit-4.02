@@ -24,9 +24,22 @@
       const data = JSON.parse(event.data);
       console.log(data);
       if (data.message === "Start" && data.source === "host") {
-        const questions = data.questions.substring(1, data.questions.length - 1).split(',').map(Number);
-        const url = `/multiplayer-display-question?room_name={{params.room_name}}&mode={{params.mode}}&first_name={{params.first_name}}&last_name={{params.last_name}}&role={{params.role}}&game_id={{params.game_id}}&player_id={{params.player_id}}&questions=${JSON.stringify(questions)}&score=0`;
-        window.location.href = url;
+          const questions = data.questions.substring(1, data.questions.length - 1).split(',').map(Number);
+          htmx.ajax('GET', 'multiplayer-display-question', {
+              source: document.body,
+              swap: 'outerHTML',
+              values: {
+                  room_name: '{{ params.room_name }}',
+                  mode: '{{ params.mode }}',
+                  first_name: '{{ params.first_name }}',
+                  last_name: '{{ params.last_name }}',
+                  role: '{{ params.role }}',
+                  game_id: {{ params.game_id }},
+                  player_id: {{ params.player_id }},
+                  questions: JSON.stringify(questions),
+                  score: 0
+              }
+          });
       }
     };
 

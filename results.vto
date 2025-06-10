@@ -1,0 +1,48 @@
+{{ layout "default.vto" }}
+<main style="background-color: #{{ params.topic_color }}">
+  <div class="position-relative p-5 text-center">
+    <h1>Your Score: {{ params.score }}</h1>
+    <button class="btn btn-lg mb-2" style="width:80%" type="button" onclick="playAgain({{ params.player_id }})">
+      <b class="fs-4">Play again</b>
+    </button>
+    <button class="btn btn-lg mb-2" style="width:80%" type="button" onclick="registerToVote()">
+      <b class="fs-4">Register to vote</b>
+      <span class="fs-6">Only takes around two minutes</span>
+    </button>
+    <button class="btn btn-lg mb-2" style="width:80%" type="button" onclick="joinLWV()">
+      <b class="fs-4">Join the LWV</b>
+      <span class="fs-6">Help empower other voters</span>
+    </button>
+    <button class="btn btn-lg mb-2" style="width:80%" type="button" onclick="donate()">
+      <b class="fs-4">Donate</b>
+      <span class="fs-6">Help keep VerifyIt! ad free</span>
+    </button>
+  </div>
+
+  <script>
+    function playAgain(player_id) {
+      htmx.ajax('GET', 'multiplayer-display-question', {
+        source: document.body,
+        swap: 'outerHTML',
+        values: {
+          player_id: player_id,
+          next: true,
+          score: 0
+        }
+      });
+    }
+
+    function registerToVote() {
+      // Add logic to register to vote
+    }
+
+    function joinLWV() {
+      // Add logic to join LWV
+    }
+
+    function donate() {
+      // Add logic to donate
+    }
+  </script>
+</main>
+{{ /layout }}

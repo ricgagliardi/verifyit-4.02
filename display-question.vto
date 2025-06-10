@@ -35,21 +35,6 @@
 
 {{ layout "default.vto" }}
 <main hx-target="main" hx-select="main" hx-swap="outerHTML">
-	<style>
-		dialog {
-			pointer-events: none;
-			opacity: 0;
-			transition: opacity 0.5s;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-		}
-		dialog[open] {
-			opacity: 1;
-			pointer-events: inherit;
-		}
-	</style>
 	<div>
 		<div class="subnav">
 			<div class="container-fluid" style="display: flex; align-items: center;">
@@ -81,7 +66,7 @@
 				</div>
 			</div>
 			{{ for idx, choice of question_choices }}
-				<button class="btn btn-lg mb-2 align-middle" type="button"
+				<button class="vi-btn btn-lg mb-2 align-middle" type="button"
 								style="width:100%; background-color: #{{ my_game.topic_color}}"
 								onclick="checkIfCorrect(event)"  data-idx="{{ idx + 1 }}">
 					<span data-correct hidden class="material-symbols-outlined">check_circle</span>
@@ -101,14 +86,14 @@
 					</div>
 					{{ if my_game.current_question == 9 }}
 						<button hx-get="display-score" hx-vals='{"player_id": {{ params.player_id }}}'
-									  class="btn btn-lg mb-2 " style="width:80%" type="button">
+									  class="vi-btn btn-lg mb-2 " style="width:80%" type="button">
 							<b class="fs-4">View Results</b>
 							<span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
 						</button>
 					{{ else }}
 						<button hx-get="display-question" 
 										hx-vals='{"player_id": {{ params.player_id }}, "next": true}'
-									  class="btn btn-lg mb-2 " style="width:80%" type="button">
+									  class="vi-btn btn-lg mb-2 " style="width:80%" type="button">
 							<b class="fs-4">Next Question</b>
 							<span class="material-symbols-outlined btn-arrow-icon">arrow_forward_ios</span>
 						</button>
